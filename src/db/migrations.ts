@@ -1,10 +1,10 @@
 /** Webhook 에서 들어온 데이터를 DB 테이블에 맞게 데이터를 마이그레이션 합니다 */
 import { JiraWebhookData } from "../defines/JiraWebhook";
 import { JiraProjectDBData, JiraProjectLinksDBData } from "../defines/JiraDb";
-import { getJiraProject, setJiraProject, setJiraProjectLinks } from "./jira";
+import { closeDataBase, getJiraProject, openDataBase, setJiraProject, setJiraProjectLinks } from "./jira";
 
 /** 지라 프로젝트에 맞는 데이터만 분리하여 쿼리를 실행합니다. */
-export const jiraProjectDataMigration = (webhookData: JiraWebhookData) => {
+export const jiraProjectDataMigration = async (webhookData: JiraWebhookData) => {
     const { issue } = webhookData;
     // const { displayName } = user;
     const { id, key: project_key, fields } = issue;
@@ -33,6 +33,8 @@ export const jiraProjectDataMigration = (webhookData: JiraWebhookData) => {
         });
     });
 
-    setJiraProject(data);
-    if (linksData.length > 0) setJiraProjectLinks(linksData);
+    openDataBase();
+    await setJiraProject(data);
+    if (linksData.length > 0) await setJiraProjectLinks(linksData);
+    closeDataBase();
 }

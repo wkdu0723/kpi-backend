@@ -1,7 +1,6 @@
 import express from "express";
 import bodyParser from "body-parser";
 import ngrok from "@ngrok/ngrok";
-import { getJiraProject, setJiraProject } from "./db/jira";
 import { jiraProjectDataMigration } from "./db/migrations";
 import { JiraWebhookData } from "./defines/JiraWebhook";
 
@@ -14,14 +13,7 @@ app.post("/jira/webhook", (req, res) => {
     const eventData = req.body as JiraWebhookData;
     console.log("Received Jira Webhook Event:", eventData);
 
-    // jiraProjectDataMigration(eventData);
-
-    res.status(200).send("Webhook Received");
-});
-
-app.get("/jira/webhook1", (req, res) => {
-    const eventData = req.body;
-    console.log("get Jira Webhook Event:", eventData);
+    jiraProjectDataMigration(eventData);
 
     res.status(200).send("Webhook Received");
 });
