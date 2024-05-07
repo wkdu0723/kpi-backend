@@ -26,8 +26,8 @@ export const jiraProjectDataMigration = (webhookData: JiraWebhookData) => {
     issuelinks?.map((item) => {
         linksData.push({
             id,
-            link_project_id: item.id,
-            link_project_key: item.key,
+            link_project_id: item.outwardIssue.id,
+            link_project_key: item.outwardIssue.key,
             link_project_account_id: assignee_account_id,
             link_project_account_name: assignee_display_name,
         });

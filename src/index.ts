@@ -14,9 +14,7 @@ app.post("/jira/webhook", (req, res) => {
     const eventData = req.body as JiraWebhookData;
     console.log("Received Jira Webhook Event:", eventData);
 
-    console.log("???? fields:", eventData.issue.fields);
-
-    jiraProjectDataMigration(eventData);
+    // jiraProjectDataMigration(eventData);
 
     res.status(200).send("Webhook Received");
 });

@@ -98,23 +98,24 @@ export const setJiraProject = async (data: JiraProjectDBData): Promise<void> => 
 
 /** 지라 프로젝트에 연결된 링크들을 저장합니다. */
 export const setJiraProjectLinks = async (data: JiraProjectLinksDBData[]): Promise<void> => {
-    for (const item of data) {
-        const { id, link_project_id, link_project_key, link_project_account_id, link_project_account_name } = item;
-        const query = `
+    const values = data.map(item => `('${item.id}', '${item.link_project_id}', '${item.link_project_key}', '${item.link_project_account_id}', '${item.link_project_account_name}')`).join(', ');
+    const query = `
             INSERT INTO jira_links (id, link_project_id, link_project_key, link_project_account_id, link_project_account_name)
-            VALUES (?, ?, ?)
+            VALUES ${values}
+            ON DUPLICATE KEY UPDATE
+            link_project_id = VALUES(link_project_id),
+            link_project_key = VALUES(link_project_key),
+            link_project_account_id = VALUES(link_project_account_id),
+            link_project_account_name = VALUES(link_project_account_name);
         `;
 
-        return new Promise((resolve, reject) => {
-            pool.query(query, [id, link_project_id, link_project_key, link_project_account_id, link_project_account_name], (err, results) => {
-                if (err) {
-                    console.error('쿼리 실행 오류:', err);
-                    reject(err);
-                } else {
-                    console.log('데이터 삽입/업데이트 성공:', results);
-                    resolve(results);
-                }
-            });
+    return new Promise((resolve, reject) => {
+        pool.query(query, (err, results) => {
+            if (err) {
+                console.error('쿼리 실행 오류:', err);
+            } else {
+                console.log('데이터 삽입/업데이트 성공:', results);
+            }
         });
-    }
+    });
 }

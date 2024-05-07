@@ -56,8 +56,10 @@ export interface JiraWebhookData {
             },
             issuelinks?: [
                 { // 연결된 이슈 링크들
-                    id: string; // '10000',
-                    key: string; // KAN-3
+                    outwardIssue: { //
+                        id: string; // 10001
+                        key: string; // KAN-2
+                    }
                 }
             ],
         }
