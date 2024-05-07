@@ -1,7 +1,7 @@
 import express from "express";
 import bodyParser from "body-parser";
 import ngrok from "@ngrok/ngrok";
-import { jiraProjectDataMigration } from "./db/migrations";
+import { jiraDataMigration } from "./db/migrations";
 import { JiraWebhookData } from "./defines/JiraWebhook";
 
 const app = express();
@@ -11,11 +11,8 @@ app.use(bodyParser.json());
 
 app.post("/jira/webhook", (req, res) => {
     const eventData = req.body as JiraWebhookData;
-    console.log("Received Jira Webhook Event:", eventData);
 
-    jiraProjectDataMigration(eventData);
-
-    res.status(200).send("Webhook Received");
+    jiraDataMigration(eventData);
 });
 
 app.listen(port, () => {

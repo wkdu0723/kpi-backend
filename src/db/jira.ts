@@ -1,6 +1,7 @@
 // import mysql from "mysql";
 import sqlite3 from "sqlite3";
 import { JiraProjectDBData, JiraProjectLinksDBData } from "../defines/JiraDb";
+import { JiraIssueLinkData } from "../defines/JiraWebhook";
 
 // 연결 풀 설정
 // const pool = mysql.createPool({
@@ -34,7 +35,12 @@ export const closeDataBase = () => {
     db.close();
 }
 
-/** 프론트팀이 담당자로 되어있는 모든 지라프로젝트를 가지고옵니다. */
+/** 해당 계정이 가지고 있는 모든 지라 프로젝트 db에 저장합니다. (초기 설정하기 위함.) */
+export const getAccountProject = async () => {
+
+}
+
+/** jira_main 테이블에 있는 모든 데이터를 가지고옵니다. */
 export const getJiraProject = async (): Promise<JiraProjectDBData[]> => {
     return new Promise((resolve, reject) => {
         db.all("SELECT * FROM jira_main", (err, results: JiraProjectDBData[]) => {
@@ -54,8 +60,7 @@ export const setJiraProject = async (data: JiraProjectDBData): Promise<void> => 
     const { id, project_key, project_name, project_type, created, updated, description, summary, assignee_account_id, assignee_display_name,
         status_name, status_category_id, status_category_name, status_category_color } = data;
 
-    // 데이터 삽입 쿼리
-    const insertQuery = `
+    const query = `
         INSERT INTO jira_main (
             id, project_key, project_name, project_type, created, updated,
             description, summary, assignee_account_id, assignee_display_name,
@@ -95,7 +100,7 @@ export const setJiraProject = async (data: JiraProjectDBData): Promise<void> => 
         status_category_color,
     ];
 
-    db.run(insertQuery, values, (err) => {
+    db.run(query, values, (err) => {
         if (err) {
             console.error("setJiraProject 쿼리 실행 오류:", err);
         } else {
@@ -106,15 +111,14 @@ export const setJiraProject = async (data: JiraProjectDBData): Promise<void> => 
 
 /** 지라 프로젝트에 연결된 링크들을 저장합니다. */
 export const setJiraProjectLinks = async (data: JiraProjectLinksDBData[]): Promise<void> => {
-    // 쿼리 예제
-    const insertQuery = `
+    const query = `
         INSERT OR REPLACE INTO jira_links (
             id, link_project_id, link_project_key, link_project_account_id, link_project_account_name
         )
         VALUES (?, ?, ?, ?, ?);
     `;
 
-    const stmt = db.prepare(insertQuery);
+    const stmt = db.prepare(query);
 
     // 트랜잭션 시작
     db.exec('BEGIN TRANSACTION');
@@ -137,3 +141,39 @@ export const setJiraProjectLinks = async (data: JiraProjectLinksDBData[]): Promi
         stmt.finalize();
     }
 };
+
+/** 이슈 연결 */
+export const setJiraProjectLink = async (issueLinkData: JiraIssueLinkData) => {
+    const query = `
+        INSERT OR REPLACE INTO jira_links (
+            link_project_id, id
+        )
+        VALUES (?, ?);
+    `;
+
+    const values = [
+        issueLinkData.sourceIssueId,
+        issueLinkData.destinationIssueId,
+    ];
+
+    db.run(query, values, (err) => {
+        if (err) {
+            console.error("setJiraProjectLink 쿼리 실행 오류:", err);
+        } else {
+            console.log("setJiraProjectLink 성공");
+        }
+    });
+}
+
+/** 연결된 이슈 삭제 */
+export const deleteJiraProjectLink = async (issueLinkData: JiraIssueLinkData) => {
+    const query = `DELETE FROM jira_links WHERE id = ${issueLinkData.destinationIssueId} AND link_project_id = ${issueLinkData.sourceIssueId}`;
+
+    db.run(query, (err) => {
+        if (err) {
+            console.error("deleteJiraProjectLink 쿼리 실행 오류:", err);
+        } else {
+            console.log("deleteJiraProjectLink 성공");
+        }
+    });
+}
