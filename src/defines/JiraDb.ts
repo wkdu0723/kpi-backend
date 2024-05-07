@@ -20,7 +20,4 @@ export interface JiraProjectDBData {
 export interface JiraProjectLinksDBData {
     id: string; // 본인 프로젝트 id입니다.
     link_project_id: string; // 연결된 프로젝트 id입니다.
-    link_project_key: string; // 연결된 프로젝트 key입니다.
-    link_project_account_id: string; // 연결된 프로젝트 담당자 id 입니다.
-    link_project_account_name: string; // 연결된 프로젝트 담당자 이름 입니다.
 }

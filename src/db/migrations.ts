@@ -37,9 +37,6 @@ const updateJiraIssue = async (issueData?: JiraIssueData) => {
         linksData.push({
             id,
             link_project_id: item.outwardIssue.id,
-            link_project_key: item.outwardIssue.key,
-            link_project_account_id: assignee_account_id,
-            link_project_account_name: assignee_display_name,
         });
     });
 

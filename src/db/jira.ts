@@ -113,9 +113,9 @@ export const setJiraProject = async (data: JiraProjectDBData): Promise<void> => 
 export const setJiraProjectLinks = async (data: JiraProjectLinksDBData[]): Promise<void> => {
     const query = `
         INSERT OR REPLACE INTO jira_links (
-            id, link_project_id, link_project_key, link_project_account_id, link_project_account_name
+            link_project_id, id
         )
-        VALUES (?, ?, ?, ?, ?);
+        VALUES (?, ?);
     `;
 
     const stmt = db.prepare(query);
@@ -126,7 +126,7 @@ export const setJiraProjectLinks = async (data: JiraProjectLinksDBData[]): Promi
     try {
         data.forEach((item) => {
             // 준비된 문에 값 바인딩 및 실행
-            stmt.run(item.id, item.link_project_id, item.link_project_key, item.link_project_account_id, item.link_project_account_name);
+            stmt.run(item.link_project_id, item.id);
         });
 
         // 트랜잭션 커밋
