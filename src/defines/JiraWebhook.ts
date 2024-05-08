@@ -3,6 +3,7 @@
  * Jira Webhook 이벤트입니다.
  * 아래 공식 문서 참고
  * https://developer.atlassian.com/server/jira/platform/webhooks/#register-a-webhook
+ * https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-issue-search/#api-group-issue-search
  * */
 export enum JiraWebhookEvent {
     project_created = "project_created", // 프로젝트 생성
@@ -10,6 +11,7 @@ export enum JiraWebhookEvent {
     project_deleted = "project_deleted", // 프로젝트 삭제
     issue_created = "jira:issue_created", // 이슈 생성
     issue_updated = "jira:issue_updated", // 이슈 업데이트
+    issue_deleted = "jira:issue_deleted", // 이슈 삭제
     issuelink_created = "issuelink_created", // 이슈 연결
     issuelink_deleted = "issuelink_deleted", // 연결된 이슈 삭제
     worklog_created = "worklog_created", // 작업내역 생성
@@ -35,6 +37,17 @@ export interface JiraCommentData {
     },
     created: string; // '2024-05-02T17:54:06.140+0900',
     updated: string; // '2024-05-02T17:54:06.140+0900',
+}
+
+export interface IssuelinksData {
+    inwardIssue?: { // 부모이슈 (내가 다른이슈에 물려있는 경우) is blocked by
+        id: string;
+        key: string;
+    }
+    outwardIssue?: { // 자식이슈 (다른 이슈가 나를 연결한 경우) blocks
+        id: string; // 10001
+        key: string; // KAN-2
+    }
 }
 
 /** 이슈 데이터입니다. */
@@ -66,22 +79,19 @@ export interface JiraIssueData {
                 colorName: string;// 상태 라벨 색상
             }
         },
-        issuelinks?: [
-            { // 연결된 이슈 링크들
-                outwardIssue: { //
-                    id: string; // 10001
-                    key: string; // KAN-2
-                }
-            }
-        ],
+        issuelinks?: IssuelinksData[]; // 연결된 이슈 링크들
+        parent?: { // 상위 항목
+            id: string;
+            key: string;
+        }
     }
 }
 
 /** 이슈 연결 관련 데이터입니다. (이슈 연결 삭제 시) */
 export interface JiraIssueLinkData {
     id: string;
-    sourceIssueId: string; // 연결되거나 삭제한 이슈 id
-    destinationIssueId: string; // 자기 자신 id
+    sourceIssueId: string; // 연결되거나 삭제한 이슈 id (inwardIssue)
+    destinationIssueId: string; // 자기 자신 id (outwardIssue)
 }
 
 /** 지라 웹훅 데이터입니다. */

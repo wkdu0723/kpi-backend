@@ -1,7 +1,7 @@
 import express from "express";
 import bodyParser from "body-parser";
 import ngrok from "@ngrok/ngrok";
-import { jiraDataMigration } from "./db/migrations";
+import { jiraDataMigration, setAccountProjectHandler } from "./db/handler";
 import { JiraWebhookData } from "./defines/JiraWebhook";
 
 const app = express();
@@ -25,3 +25,9 @@ ngrok.connect({
 }).then(listener => {
     console.log(`Ingress established at: ${listener.url()}`);
 });
+
+setAccountProjectHandler(
+    "6423c871b05b4e3e7daba91f",
+    "wkdu0723@gmail.com",
+    "ATATT3xFfGF0l-sWRAJqNsP9PH6YnL0f0tY8-L-dnCzkcixC1VtxRmkClaQ6gNPw2Ob5l2JLwnptCIdl618E8XM6PgTB0dR557R0bFY7yB8qc9FiAhbUx833eSuZ0G7qV7V3Sq62W7wUnMRQJJXAvf4eNESeFLa5QE3NlqjdXnDYcHi0CYRRJCo=2CC61106"
+);
