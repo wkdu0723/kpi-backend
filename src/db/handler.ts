@@ -1,7 +1,7 @@
 /** Webhook 에서 들어온 데이터를 DB 테이블에 맞게 데이터를 마이그레이션 합니다 */
 import { IssuelinksData, JiraIssueData, JiraIssueLinkData, JiraWebhookData, JiraWebhookEvent } from "../defines/JiraWebhook";
 import { JiraProjectDBData, JiraProjectLinksDBData } from "../defines/JiraDb";
-import { closeDataBase, deleteIssue, deleteJiraIssueLink, getJiraIssue, openDataBase, setJiraIntegratedIssue, setJiraIssueLink } from "./jira";
+import { closeDataBase, deleteIssue, deleteJiraIssueLink, getJiraIssue, openDataBase, setAccount, setJiraIntegratedIssue, setJiraIssueLink } from "./jira";
 import { requestAccountProject } from "../api";
 
 export interface ProjectDataMigrationResult {
@@ -49,7 +49,7 @@ const updateJiraIssueHandler = async (issueData?: JiraIssueData) => {
         if (!issueData) return;
         await openDataBase();
         await setJiraIntegratedIssue([issueData])
-        closeDataBase();
+        await closeDataBase();
     } catch (err) {
         console.error("updateJiraIssueHandler", err);
     }
@@ -91,7 +91,7 @@ const deleteJiraIssueLinkHandler = async (issueLinkData?: JiraIssueLinkData) => 
     }
 }
 
-/** 유저가 작성한 최신 게시글 100개를 가져와 db에 저장합니다. (초기 데이터 설정을 위함) */
+/** 유저가 작성한 최신 게시글 100개를 가져와 db에 저장하기 위한 핸들러입니다. (초기 데이터 설정을 위함) */
 export const setAccountProjectHandler = async (accountId: string, email: string, accountAPIKey: string) => {
     try {
         const resp = await requestAccountProject(accountId, email, accountAPIKey);
@@ -104,5 +104,15 @@ export const setAccountProjectHandler = async (accountId: string, email: string,
     } catch (err) {
         console.error("setAccountProjectHandler", err);
     }
+}
 
+/** 유저 계정 정보를 db에 저장하기 위한 핸들러입니다. */
+export const setJiraAccountHandler = async (accountId: string, name: string, email: string, accountAPIKey: string) => {
+    try {
+        await openDataBase();
+        await setAccount(accountId, name, email, accountAPIKey);
+        await closeDataBase();
+    } catch (err) {
+        console.error("setAccountProjectHandler", err);
+    }
 }

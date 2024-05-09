@@ -28,6 +28,31 @@ export const closeDataBase = async () => {
     }
 }
 
+/** 계정을 저장합니다. (이미 id가 존재할 경우 업데이트) */
+export const setAccount = async (id: string, name: string, email: string, apiToken: string): Promise<void> => {
+    try {
+        const query = `
+            INSERT INTO jira_users (id, name, email, api_token)
+            VALUES (?, ?, ?, ?)
+            ON CONFLICT(id) DO UPDATE SET
+                name = excluded.name,
+                email = excluded.email,
+                api_token = excluded.api_token;
+        `;
+
+        const values = [id, name, email, apiToken];
+
+        await new Promise((resolve, reject) => {
+            db.run(query, values, (err) => {
+                if (err) reject(err);
+                else resolve("");
+            });
+        });
+    } catch (err) {
+        console.error("setAccount 에러:", err);
+    }
+}
+
 /** 지라 이슈 및 이슈 링크들을 db에 저장합니다. */
 export const setJiraIntegratedIssue = async (project: JiraIssueData[]) => {
     try {
