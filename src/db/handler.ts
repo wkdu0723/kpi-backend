@@ -1,7 +1,7 @@
 /** Webhook 에서 들어온 데이터를 DB 테이블에 맞게 데이터를 마이그레이션 합니다 */
 import { IssuelinksData, JiraIssueData, JiraIssueLinkData, JiraWebhookData, JiraWebhookEvent } from "../defines/JiraWebhook";
 import { JiraProjectDBData, JiraProjectLinksDBData } from "../defines/JiraDb";
-import { closeDataBase, deleteIssue, deleteJiraIssueLink, getJiraIssue, openDataBase, setJiraIntegratedIssue, setJiraIssue, setJiraIssueLink, setJiraIssueLinks } from "./jira";
+import { closeDataBase, deleteIssue, deleteJiraIssueLink, getJiraIssue, openDataBase, setJiraIntegratedIssue, setJiraIssueLink } from "./jira";
 import { requestAccountProject } from "../api";
 
 export interface ProjectDataMigrationResult {
@@ -14,10 +14,10 @@ export const jiraDataMigration = async (webhookData: JiraWebhookData) => {
     const eventType = webhookData.webhookEvent;
     console.log("????? webhookData:", webhookData);
 
-    if (eventType === JiraWebhookEvent.issuelink_created) setJiraIssueLinkHandler(webhookData.issueLink);
-    else if (eventType === JiraWebhookEvent.issuelink_deleted) deleteJiraIssueLinkHandler(webhookData.issueLink);
-    else if (eventType === JiraWebhookEvent.issue_deleted) deleteJiraIssue(webhookData.issue);
-    else updateJiraIssueHandler(webhookData.issue);
+    if (eventType === JiraWebhookEvent.issuelink_created) await setJiraIssueLinkHandler(webhookData.issueLink);
+    else if (eventType === JiraWebhookEvent.issuelink_deleted) await deleteJiraIssueLinkHandler(webhookData.issueLink);
+    else if (eventType === JiraWebhookEvent.issue_deleted) await deleteJiraIssue(webhookData.issue);
+    else await updateJiraIssueHandler(webhookData.issue);
 }
 
 /** 메인 이슈 db테이블에 맞게 데이터를 마이그레이션합니다. */
@@ -61,7 +61,7 @@ const deleteJiraIssue = async (issueData?: JiraIssueData) => {
         if (!issueData) return;
         await openDataBase();
         await deleteIssue(issueData.id);
-        closeDataBase();
+        await closeDataBase();
     } catch (err) {
         console.error("deleteJiraIssue", err);
     }
@@ -73,7 +73,7 @@ const setJiraIssueLinkHandler = async (issueLinkData?: JiraIssueLinkData) => {
         if (!issueLinkData) return;
         await openDataBase();
         await setJiraIssueLink(issueLinkData);
-        closeDataBase();
+        await closeDataBase();
     } catch (err) {
         console.error("setJiraIssueLinkHandler", err);
     }
@@ -85,7 +85,7 @@ const deleteJiraIssueLinkHandler = async (issueLinkData?: JiraIssueLinkData) => 
         if (!issueLinkData) return;
         await openDataBase();
         await deleteJiraIssueLink(issueLinkData);
-        closeDataBase();
+        await closeDataBase();
     } catch (err) {
         console.error("deleteJiraIssueLinkHandler", err);
     }
@@ -100,7 +100,7 @@ export const setAccountProjectHandler = async (accountId: string, email: string,
 
         await openDataBase();
         await setJiraIntegratedIssue(resp);
-        closeDataBase();
+        await closeDataBase();
     } catch (err) {
         console.error("setAccountProjectHandler", err);
     }
