@@ -1,6 +1,6 @@
 import sqlite3 from "sqlite3";
 import { JiraProjectDBData, JiraProjectLinksDBData } from "../defines/JiraDb";
-import { JiraIssueData, JiraIssueLinkData } from "../defines/JiraWebhook";
+import { JiraIssueData, JiraIssueLinkData, JiraWorkLogData } from "../defines/JiraWebhook";
 import { projectDataMigration } from "./handler";
 
 // 데이터베이스 파일 이름 지정
@@ -133,8 +133,8 @@ export const setJiraIssue = async (data: JiraProjectDBData): Promise<void> => {
                 status_name=excluded.status_name,
                 status_category_id=excluded.status_category_id,
                 status_category_name=excluded.status_category_name,
-                status_category_color=excluded.status_category_color;
-                parent_id=excluded.parent_id;
+                status_category_color=excluded.status_category_color,
+                parent_id=excluded.parent_id,
                 parent_key=excluded.parent_key;
             `;
 
@@ -262,5 +262,66 @@ export const deleteJiraIssueLink = async (issueLinkData: JiraIssueLinkData) => {
         });
     } catch (err) {
         console.error("deleteJiraIssueLink 쿼리 실행 오류:", err);
+    }
+}
+
+/** 작업내역을 생성 및 업데이트합니다. */
+export const setJiraWorkLog = async (workLog: JiraWorkLogData) => {
+    try {
+        const { id, author, updateAuthor, comment, created, updated, started, timeSpentSeconds, issueId } = workLog;
+
+        const query = `
+            INSERT INTO jira_worklog (
+                id, user_id, user_name, issue_id, comment, created, updated,
+                started, time_spent_seconds
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ON CONFLICT(id) DO UPDATE SET
+                user_id=excluded.user_id,
+                user_name=excluded.user_name,
+                issue_id=excluded.issue_id,
+                comment=excluded.comment,
+                created=excluded.created,
+                updated=excluded.updated,
+                started=excluded.started,
+                time_spent_seconds=excluded.time_spent_seconds;
+            `;
+
+        const values = [
+            id,
+            author.accountId,
+            author.displayName,
+            issueId,
+            comment,
+            created,
+            updated,
+            started,
+            timeSpentSeconds
+        ];
+
+        await new Promise((resolve, reject) => {
+            db.run(query, values, (err) => {
+                if (err) reject(err);
+                else resolve("");
+            });
+        });
+    } catch (err) {
+        console.error("setJiraWorkLog 쿼리 실행 오류:", err);
+    }
+}
+
+/** 작업 내역을 삭제합니다. */
+export const deleteJiraWorkLog = async (id: string) => {
+    try {
+        const query = `DELETE FROM jira_worklog WHERE id = ${id}`;
+
+        await new Promise((resolve, reject) => {
+            db.run(query, (err) => {
+                if (err) reject(err);
+                else resolve("");
+            });
+        });
+    } catch (err) {
+        console.error("deleteJiraWorkLog 쿼리 실행 오류:", err);
     }
 }

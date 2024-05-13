@@ -1,7 +1,7 @@
 /** Webhook 에서 들어온 데이터를 DB 테이블에 맞게 데이터를 마이그레이션 합니다 */
-import { IssuelinksData, JiraIssueData, JiraIssueLinkData, JiraWebhookData, JiraWebhookEvent } from "../defines/JiraWebhook";
+import { IssuelinksData, JiraIssueData, JiraIssueLinkData, JiraWebhookData, JiraWebhookEvent, JiraWorkLogData } from "../defines/JiraWebhook";
 import { JiraProjectDBData, JiraProjectLinksDBData } from "../defines/JiraDb";
-import { closeDataBase, deleteIssue, deleteJiraIssueLink, getJiraIssue, openDataBase, setAccount, setJiraIntegratedIssue, setJiraIssueLink } from "./jira";
+import { closeDataBase, deleteIssue, deleteJiraIssueLink, deleteJiraWorkLog, getJiraIssue, openDataBase, setAccount, setJiraIntegratedIssue, setJiraIssueLink, setJiraWorkLog } from "./jira";
 import { requestAccountProject } from "../api";
 
 export interface ProjectDataMigrationResult {
@@ -17,6 +17,8 @@ export const jiraDataMigration = async (webhookData: JiraWebhookData) => {
     if (eventType === JiraWebhookEvent.issuelink_created) await setJiraIssueLinkHandler(webhookData.issueLink);
     else if (eventType === JiraWebhookEvent.issuelink_deleted) await deleteJiraIssueLinkHandler(webhookData.issueLink);
     else if (eventType === JiraWebhookEvent.issue_deleted) await deleteJiraIssue(webhookData.issue);
+    else if (eventType === JiraWebhookEvent.worklog_created || eventType === JiraWebhookEvent.worklog_updated || eventType === JiraWebhookEvent.worklog_deleted)
+        await jiraWorkLogHandler(eventType, webhookData.worklog);
     else await updateJiraIssueHandler(webhookData.issue);
 }
 
@@ -51,7 +53,7 @@ const updateJiraIssueHandler = async (issueData?: JiraIssueData) => {
         await setJiraIntegratedIssue([issueData])
         await closeDataBase();
     } catch (err) {
-        console.error("updateJiraIssueHandler", err);
+        console.error("updateJiraIssueHandler:", err);
     }
 }
 
@@ -63,7 +65,7 @@ const deleteJiraIssue = async (issueData?: JiraIssueData) => {
         await deleteIssue(issueData.id);
         await closeDataBase();
     } catch (err) {
-        console.error("deleteJiraIssue", err);
+        console.error("deleteJiraIssue:", err);
     }
 }
 
@@ -75,7 +77,7 @@ const setJiraIssueLinkHandler = async (issueLinkData?: JiraIssueLinkData) => {
         await setJiraIssueLink(issueLinkData);
         await closeDataBase();
     } catch (err) {
-        console.error("setJiraIssueLinkHandler", err);
+        console.error("setJiraIssueLinkHandler:", err);
     }
 }
 
@@ -87,7 +89,7 @@ const deleteJiraIssueLinkHandler = async (issueLinkData?: JiraIssueLinkData) => 
         await deleteJiraIssueLink(issueLinkData);
         await closeDataBase();
     } catch (err) {
-        console.error("deleteJiraIssueLinkHandler", err);
+        console.error("deleteJiraIssueLinkHandler:", err);
     }
 }
 
@@ -102,7 +104,7 @@ export const setAccountProjectHandler = async (accountId: string, email: string,
         await setJiraIntegratedIssue(resp);
         await closeDataBase();
     } catch (err) {
-        console.error("setAccountProjectHandler", err);
+        console.error("setAccountProjectHandler:", err);
     }
 }
 
@@ -113,6 +115,22 @@ export const setJiraAccountHandler = async (accountId: string, name: string, ema
         await setAccount(accountId, name, email, accountAPIKey);
         await closeDataBase();
     } catch (err) {
-        console.error("setAccountProjectHandler", err);
+        console.error("setAccountProjectHandler:", err);
+    }
+}
+
+/** 작업 내역 정보를 db에 저장하기 위한 핸들러입니다. */
+export const jiraWorkLogHandler = async (eventType: JiraWebhookEvent, workLog?: JiraWorkLogData) => {
+    try {
+        if (!workLog) return;
+
+        await openDataBase();
+
+        if (eventType === JiraWebhookEvent.worklog_deleted) await deleteJiraWorkLog(workLog.id);
+        else await setJiraWorkLog(workLog);
+
+        await closeDataBase();
+    } catch (err) {
+        console.error("setJiraWorkLogHandler:", err)
     }
 }

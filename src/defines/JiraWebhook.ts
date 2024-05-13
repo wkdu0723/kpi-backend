@@ -15,7 +15,8 @@ export enum JiraWebhookEvent {
     issuelink_created = "issuelink_created", // 이슈 연결
     issuelink_deleted = "issuelink_deleted", // 연결된 이슈 삭제
     worklog_created = "worklog_created", // 작업내역 생성
-    worklog_updated = "jira:worklog_updated" // 작업내역 업데이트
+    worklog_updated = "worklog_updated", // 작업내역 업데이트
+    worklog_deleted = "worklog_deleted", // 작업 내역 삭제
 }
 
 /** 프로젝트 상태값 변경 시 유저 데이터 입니다. */
@@ -39,6 +40,7 @@ export interface JiraCommentData {
     updated: string; // '2024-05-02T17:54:06.140+0900',
 }
 
+/** 연결된 이슈 링크 데이터입니다. */
 export interface IssuelinksData {
     inwardIssue?: { // 부모이슈 (내가 다른이슈에 물려있는 경우) is blocked by
         id: string;
@@ -48,6 +50,26 @@ export interface IssuelinksData {
         id: string; // 10001
         key: string; // KAN-2
     }
+}
+
+/** 작업내역 로그 생성 데이터입니다.  */
+export interface JiraWorkLogData {
+    author: { // 작성자
+        accountId: string; // '6423c871b05b4e3e7daba91f',
+        displayName: string; //'최영완',
+    },
+    updateAuthor: { // 업데이트 한 사람 (작성자랑 다를수있음)
+        accountId: string; // '6423c871b05b4e3e7daba91f',
+        displayName: string; // '최영완',
+    },
+    comment: string; // 내용
+    created: string; // 생성 시간 '2024-05-13T12:43:22.170+0900',
+    updated: string; // 업데이트 시간 '2024-05-13T12:43:22.170+0900',
+    started: string; // 시작 시간 '2024-05-13T11:43:10.479+0900',
+    timeSpent: string; // '1h',
+    timeSpentSeconds: string; // 3600,
+    id: string; // 등록된 작업 내역 id '10001',
+    issueId: string; // 이슈 id '10037'
 }
 
 /** 이슈 데이터입니다. */
@@ -102,4 +124,5 @@ export interface JiraWebhookData {
     comment?: JiraCommentData;
     issue?: JiraIssueData;
     issueLink?: JiraIssueLinkData; // 이슈 링크 삭제 시 데이터
+    worklog?: JiraWorkLogData; // 작업 내역 생성 및 업데이트 시 데이터
 }
