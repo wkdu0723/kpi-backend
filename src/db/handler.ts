@@ -1,7 +1,13 @@
 /** Webhook 에서 들어온 데이터를 DB 테이블에 맞게 데이터를 마이그레이션 합니다 */
-import { IssuelinksData, JiraIssueData, JiraIssueLinkData, JiraWebhookData, JiraWebhookEvent, JiraWorkLogData } from "../defines/JiraWebhook";
-import { JiraProjectDBData, JiraProjectLinksDBData } from "../defines/JiraDb";
-import { closeDataBase, deleteIssue, deleteJiraIssueLink, deleteJiraWorkLog, getJiraIssue, openDataBase, setAccount, setJiraIntegratedIssue, setJiraIssueLink, setJiraWorkLog } from "./jira";
+import {
+    IssuelinksData, JiraIssueData, JiraIssueLinkData, JiraWebhookData,
+    JiraWebhookEvent, JiraWorkLogData
+} from "../defines/JiraWebhook";
+import { JiraProjectDBData } from "../defines/JiraDb";
+import {
+    closeDataBase, deleteIssue, deleteJiraIssueLink, deleteJiraWorkLog,
+    openDataBase, setAccount, setJiraIntegratedIssue, setJiraIssueLink, setJiraWorkLog
+} from "./jira";
 import { requestAccountProject } from "../api";
 
 export interface ProjectDataMigrationResult {

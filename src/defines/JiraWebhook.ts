@@ -2,8 +2,8 @@
 /**
  * Jira Webhook 이벤트입니다.
  * 아래 공식 문서 참고
- * https://developer.atlassian.com/server/jira/platform/webhooks/#register-a-webhook
- * https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-issue-search/#api-group-issue-search
+ * https://developer.atlassian.com/server/jira/platform/webhooks/#register-a-webhook (webhook 가이드)
+ * https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-issue-search/#api-group-issue-search (jira api 목록)
  * */
 export enum JiraWebhookEvent {
     project_created = "project_created", // 프로젝트 생성
