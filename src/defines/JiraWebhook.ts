@@ -19,25 +19,28 @@ export enum JiraWebhookEvent {
     worklog_deleted = "worklog_deleted", // 작업 내역 삭제
 }
 
-/** 프로젝트 상태값 변경 시 유저 데이터 입니다. */
+/**
+ * 프로젝트 상태값 변경 시 유저 데이터 입니다.
+ * 추후 user에 필요한 데이터가 있는경우 데이터 타입 추가 할 예정
+ * */
 export interface JiraUserData {
     displayName: string; //이름
 }
 
 /** 프로젝트 댓글 입력시 데이터 입니다. */
 export interface JiraCommentData {
-    id: string; // '10002',
+    id: string; // 작업내역 id '10002',
     author: { // 댓글을 처음 작성한 사람
-        accountId: string; // '712020:20955c43-0d40-47d5-b100-faf80c0f0327',
-        displayName: string; // '[TFDT] 최영완',
+        accountId: string; // 계정id '712020:20955c43-0d40-47d5-b100-faf80c0f0327',
+        displayName: string; // 계정닉네임 '[TFDT] 최영완',
     },
     body: string; // '댓글글',
     updateAuthor: { // 마지막 업데이트 한 유저 (기존에 있는 댓글을 다른사람이 수정한 경우 마지막 수정한 사람의 데이터)
-        accountId: string; //'712020:20955c43-0d40-47d5-b100-faf80c0f0327',
-        displayName: string; //'[TFDT] 최영완',
+        accountId: string; // 계정id '712020:20955c43-0d40-47d5-b100-faf80c0f0327',
+        displayName: string; // 계정닉네임 '[TFDT] 최영완',
     },
-    created: string; // '2024-05-02T17:54:06.140+0900',
-    updated: string; // '2024-05-02T17:54:06.140+0900',
+    created: string; // 생성시간 '2024-05-02T17:54:06.140+0900',
+    updated: string; // 업데이트 시간 '2024-05-02T17:54:06.140+0900',
 }
 
 /** 연결된 이슈 링크 데이터입니다. */
@@ -55,8 +58,8 @@ export interface IssuelinksData {
 /** 작업내역 로그 생성 데이터입니다.  */
 export interface JiraWorkLogData {
     author: { // 작성자
-        accountId: string; // '6423c871b05b4e3e7daba91f',
-        displayName: string; //'최영완',
+        accountId: string; // 계정id '6423c871b05b4e3e7daba91f',
+        displayName: string; // 계정닉네임 '최영완',
     },
     updateAuthor: { // 업데이트 한 사람 (작성자랑 다를수있음)
         accountId: string; // '6423c871b05b4e3e7daba91f',
@@ -66,8 +69,8 @@ export interface JiraWorkLogData {
     created: string; // 생성 시간 '2024-05-13T12:43:22.170+0900',
     updated: string; // 업데이트 시간 '2024-05-13T12:43:22.170+0900',
     started: string; // 시작 시간 '2024-05-13T11:43:10.479+0900',
-    timeSpent: string; // '1h',
-    timeSpentSeconds: string; // 3600,
+    timeSpent: string; // 시간 (문자형) '1h',
+    timeSpentSeconds: string; // 시간 (초) 3600,
     id: string; // 등록된 작업 내역 id '10001',
     issueId: string; // 이슈 id '10037'
 }
@@ -86,8 +89,8 @@ export interface JiraIssueData {
         description: string; // 이슈 설명
         summary: string; // 제목
         creator: { // 프로젝트를 생성한 사람
-            accountId: string; // '712020:20955c43-0d40-47d5-b100-faf80c0f0327',
-            displayName: string; //'[TFDT] 최영완',
+            accountId: string; // 계정id '712020:20955c43-0d40-47d5-b100-faf80c0f0327',
+            displayName: string; // 계정닉네임 '[TFDT] 최영완',
         },
         assignee?: { // 담당자 데이터
             accountId: string; // 담당자 키값
@@ -120,9 +123,9 @@ export interface JiraIssueLinkData {
 export interface JiraWebhookData {
     timestamp: number; // 이벤트 시간
     webhookEvent: JiraWebhookEvent; //이벤트 이름
-    user?: JiraUserData;
-    comment?: JiraCommentData;
-    issue?: JiraIssueData;
+    user?: JiraUserData; // 유저 데이터
+    comment?: JiraCommentData; // 댓글 데이터
+    issue?: JiraIssueData; // 이슈 데이터
     issueLink?: JiraIssueLinkData; // 이슈 링크 삭제 시 데이터
     worklog?: JiraWorkLogData; // 작업 내역 생성 및 업데이트 시 데이터
 }
