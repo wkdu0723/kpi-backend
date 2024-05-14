@@ -325,3 +325,17 @@ export const deleteJiraWorkLog = async (id: string) => {
         console.error("deleteJiraWorkLog 쿼리 실행 오류:", err);
     }
 }
+
+/** 유저의 모든 지라 이슈데이터를 가지고옵니다. */
+export const getUserAllIssues = async (accountId: string): Promise<JiraProjectDBData[]> => {
+    return new Promise((resolve, reject) => {
+        db.all(`SELECT * FROM jira_main WHERE assignee_account_id='${accountId}';`, (err, results: JiraProjectDBData[]) => {
+            if (err) {
+                console.error("쿼리 실행 오류:", err);
+                reject([]);
+            } else {
+                resolve(results);
+            }
+        });
+    });
+}

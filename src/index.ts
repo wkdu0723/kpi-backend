@@ -3,11 +3,13 @@ import bodyParser from "body-parser";
 import ngrok from "@ngrok/ngrok";
 import { jiraDataMigration, setAccountProjectHandler, setJiraAccountHandler } from "./db/handler";
 import { JiraWebhookData } from "./defines/JiraWebhook";
+import controller from "./api/controller";
 
 const app = express();
 const port = 3000;
 
 app.use(bodyParser.json());
+app.use("/api/users", controller);
 
 app.post("/jira/webhook", (req, res) => {
     const eventData = req.body as JiraWebhookData;
@@ -19,12 +21,12 @@ app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
 });
 
-ngrok.connect({
-    addr: 3000,
-    authtoken: "2f8M6urnhQZiyRiGtWm4xjb4FHX_7X6bWYGTdYGXPFmQ45aoT",
-}).then(listener => {
-    console.log(`Ingress established at: ${listener.url()}`);
-});
+// ngrok.connect({
+//     addr: 3000,
+//     authtoken: "2f8M6urnhQZiyRiGtWm4xjb4FHX_7X6bWYGTdYGXPFmQ45aoT",
+// }).then(listener => {
+//     console.log(`Ingress established at: ${listener.url()}`);
+// });
 
 // setAccountProjectHandler(
 //     "6423c871b05b4e3e7daba91f",

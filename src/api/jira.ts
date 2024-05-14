@@ -11,6 +11,7 @@ import { JiraIssueData } from "../defines/JiraWebhook";
  * jira api를 이용하여 현재 해당 유저가 가지고있는 게시글을 가지고옵니다. (최신 100개)
  * TODO:: 투네이션 지라 url로 변경해야함.
  * api 토큰필요 (https://id.atlassian.com/manage-profile/security/api-tokens)
+ * api 토큰은 최고관리자 토큰 또는 각 개인토큰이 필요
  * @param accountId: user accountId값
  * @param email: user email값
  * @param accountAPIKey: api 토큰값 (발급받아야함)

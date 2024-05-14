@@ -6,9 +6,10 @@ import {
 import { JiraProjectDBData } from "../defines/JiraDb";
 import {
     closeDataBase, deleteIssue, deleteJiraIssueLink, deleteJiraWorkLog,
+    getUserAllIssues,
     openDataBase, setAccount, setJiraIntegratedIssue, setJiraIssueLink, setJiraWorkLog
 } from "./jira";
-import { requestAccountProject } from "../api";
+import { requestAccountProject } from "../api/jira";
 
 export interface ProjectDataMigrationResult {
     issueData: JiraProjectDBData; // Jira 프로젝트 DB 데이터 타입
@@ -138,5 +139,21 @@ export const jiraWorkLogHandler = async (eventType: JiraWebhookEvent, workLog?: 
         await closeDataBase();
     } catch (err) {
         console.error("setJiraWorkLogHandler:", err)
+    }
+}
+
+
+/** 유저의 모든 지라 이슈데이터를 가져오기 위한 핸들러입니다. */
+export const getUserIssuesHandler = async (accountId: string) => {
+    try {
+        if (!accountId) return [];
+        await openDataBase();
+        const issues = await getUserAllIssues(accountId);
+        await closeDataBase();
+
+        return issues;
+    } catch (err) {
+        console.error("getUserIssuesHandler:", err);
+        return [];
     }
 }
