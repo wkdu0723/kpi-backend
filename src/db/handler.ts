@@ -58,9 +58,10 @@ const updateJiraIssueHandler = async (issueData?: JiraIssueData) => {
         if (!issueData) return;
         await openDataBase();
         await setJiraIntegratedIssue([issueData])
-        await closeDataBase();
+        // await closeDataBase();
     } catch (err) {
         console.error("updateJiraIssueHandler:", err);
+        // await closeDataBase();
     }
 }
 
@@ -70,9 +71,10 @@ const deleteJiraIssue = async (issueData?: JiraIssueData) => {
         if (!issueData) return;
         await openDataBase();
         await deleteIssue(issueData.id);
-        await closeDataBase();
+        // await closeDataBase();
     } catch (err) {
         console.error("deleteJiraIssue:", err);
+        // await closeDataBase();
     }
 }
 
@@ -82,9 +84,10 @@ const setJiraIssueLinkHandler = async (issueLinkData?: JiraIssueLinkData) => {
         if (!issueLinkData) return;
         await openDataBase();
         await setJiraIssueLink(issueLinkData);
-        await closeDataBase();
+        // await closeDataBase();
     } catch (err) {
         console.error("setJiraIssueLinkHandler:", err);
+        // await closeDataBase();
     }
 }
 
@@ -94,9 +97,10 @@ const deleteJiraIssueLinkHandler = async (issueLinkData?: JiraIssueLinkData) => 
         if (!issueLinkData) return;
         await openDataBase();
         await deleteJiraIssueLink(issueLinkData);
-        await closeDataBase();
+        // await closeDataBase();
     } catch (err) {
         console.error("deleteJiraIssueLinkHandler:", err);
+        // await closeDataBase();
     }
 }
 
@@ -109,9 +113,10 @@ export const setAccountProjectHandler = async (accountId: string, email: string,
 
         await openDataBase();
         await setJiraIntegratedIssue(resp);
-        await closeDataBase();
+        // await closeDataBase();
     } catch (err) {
         console.error("setAccountProjectHandler:", err);
+        // await closeDataBase();
     }
 }
 
@@ -120,9 +125,10 @@ export const setJiraAccountHandler = async (accountId: string, name: string, ema
     try {
         await openDataBase();
         await setAccount(accountId, name, email, accountAPIKey);
-        await closeDataBase();
+        // await closeDataBase();
     } catch (err) {
         console.error("setAccountProjectHandler:", err);
+        // await closeDataBase();
     }
 }
 
@@ -136,9 +142,10 @@ export const jiraWorkLogHandler = async (eventType: JiraWebhookEvent, workLog?: 
         if (eventType === JiraWebhookEvent.worklog_deleted) await deleteJiraWorkLog(workLog.id);
         else await setJiraWorkLog(workLog);
 
-        await closeDataBase();
+        // await closeDataBase();
     } catch (err) {
         console.error("setJiraWorkLogHandler:", err)
+        // await closeDataBase();
     }
 }
 
@@ -149,11 +156,12 @@ export const getUserIssuesHandler = async (accountId: string) => {
         if (!accountId) return [];
         await openDataBase();
         const issues = await getUserAllIssues(accountId);
-        await closeDataBase();
+        // // await closeDataBase();
 
         return issues;
     } catch (err) {
         console.error("getUserIssuesHandler:", err);
+        // // await closeDataBase();
         return [];
     }
 }

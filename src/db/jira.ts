@@ -331,7 +331,7 @@ export const getUserAllIssues = async (accountId: string): Promise<JiraProjectDB
     return new Promise((resolve, reject) => {
         db.all(`SELECT * FROM jira_main WHERE assignee_account_id='${accountId}';`, (err, results: JiraProjectDBData[]) => {
             if (err) {
-                console.error("쿼리 실행 오류:", err);
+                console.error("getUserAllIssues 쿼리 실행 오류:", err);
                 reject([]);
             } else {
                 resolve(results);
