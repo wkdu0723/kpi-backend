@@ -4,8 +4,10 @@ import ngrok from "@ngrok/ngrok";
 import { jiraDataMigration, setAccountProjectHandler, setJiraAccountHandler } from "./db/handler";
 import { JiraWebhookData } from "./defines/JiraWebhook";
 import controller from "./api/controller";
+import cors from "cors";
 
 const app = express();
+app.use(cors());
 const port = 3000;
 
 app.use(bodyParser.json());

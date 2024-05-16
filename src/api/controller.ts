@@ -7,7 +7,7 @@ const userAllIssues = async (req: any, res: any) => {
     try {
         const accountId = req.query.accountId || "";
         const allIssues = await getUserIssuesHandler(accountId);
-        res.json({ success: true, data: allIssues ? allIssues : [] });
+        res.json(allIssues ? allIssues : []);
     } catch (error) {
         console.error(error);
         res.status(500).json({ success: false, message: "이슈를 가지고 오는데 실패하였습니다." });
