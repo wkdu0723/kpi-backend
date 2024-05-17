@@ -344,7 +344,6 @@ export const getUserAllIssues = async (accountId: string): Promise<JiraProjectDB
 export const getSearchData = async (filter: string, keyword: string) => {
     let query = `SELECT * FROM jira_main WHERE ${filter}='${keyword}';`
     if (!filter && !keyword) query = "SELECT * FROM jira_main;";
-    console.log("??? query:", query);
 
     return new Promise((resolve, reject) => {
         db.all(query, (err, results: JiraProjectDBData[]) => {
