@@ -339,3 +339,21 @@ export const getUserAllIssues = async (accountId: string): Promise<JiraProjectDB
         });
     });
 }
+
+/** 검색결과에 맞는 데이터를 가지고옵니다. */
+export const getSearchData = async (filter: string, keyword: string) => {
+    let query = `SELECT * FROM jira_main WHERE ${filter}='${keyword}';`
+    if (!filter && !keyword) query = "SELECT * FROM jira_main;";
+    console.log("??? query:", query);
+
+    return new Promise((resolve, reject) => {
+        db.all(query, (err, results: JiraProjectDBData[]) => {
+            if (err) {
+                console.error("getSearchData 쿼리 실행 오류:", err);
+                reject([]);
+            } else {
+                resolve(results);
+            }
+        });
+    });
+}

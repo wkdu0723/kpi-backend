@@ -5,13 +5,14 @@ import { jiraDataMigration, setAccountProjectHandler, setJiraAccountHandler } fr
 import { JiraWebhookData } from "./defines/JiraWebhook";
 import controller from "./api/controller";
 import cors from "cors";
+import { openDataBase } from "./db/jira";
 
 const app = express();
 app.use(cors());
 const port = 3000;
 
 app.use(bodyParser.json());
-app.use("/api/users", controller);
+app.use("/api", controller);
 
 app.post("/jira/webhook", (req, res) => {
     const eventData = req.body as JiraWebhookData;
@@ -22,6 +23,8 @@ app.post("/jira/webhook", (req, res) => {
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
 });
+
+openDataBase();
 
 // ngrok.connect({
 //     addr: 3000,
