@@ -26,12 +26,12 @@ app.listen(port, () => {
 
 openDataBase();
 
-// ngrok.connect({
-//     addr: 3000,
-//     authtoken: "2f8M6urnhQZiyRiGtWm4xjb4FHX_7X6bWYGTdYGXPFmQ45aoT",
-// }).then(listener => {
-//     console.log(`Ingress established at: ${listener.url()}`);
-// });
+ngrok.connect({
+    addr: 3000,
+    authtoken: "2f8M6urnhQZiyRiGtWm4xjb4FHX_7X6bWYGTdYGXPFmQ45aoT",
+}).then(listener => {
+    console.log(`Ingress established at: ${listener.url()}`);
+});
 
 // setAccountProjectHandler(
 //     "6423c871b05b4e3e7daba91f",

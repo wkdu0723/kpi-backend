@@ -1,5 +1,5 @@
 import sqlite3 from "sqlite3";
-import { JiraProjectDBData, JiraProjectLinksDBData } from "../defines/JiraDb";
+import { JiraProjectDBData, JiraProjectLinksDBData, MergeJiraData } from "../defines/JiraDb";
 import { JiraIssueData, JiraIssueLinkData, JiraWorkLogData } from "../defines/JiraWebhook";
 import { projectDataMigration } from "./handler";
 
@@ -26,6 +26,36 @@ export const closeDataBase = async () => {
     } catch (err) {
         console.error("closeDataBase 에러", err);
     }
+}
+
+/** 트랜잭션 시작 */
+const beginTransaction = async () => {
+    return new Promise((resolve, reject) => {
+        db.exec("BEGIN TRANSACTION", (err) => {
+            if (err) reject(err);
+            else resolve(null);
+        });
+    });
+}
+
+/** 트랜잭션 커밋 */
+const commitTransaction = async () => {
+    return new Promise((resolve, reject) => {
+        db.exec("COMMIT", (err) => {
+            if (err) reject(err);
+            else resolve(null);
+        });
+    });
+}
+
+/** 트랜잭션 롤백 */
+const rollbackTransaction = async () => {
+    return new Promise((resolve, reject) => {
+        db.exec("ROLLBACK", (err) => {
+            if (err) reject(err);
+            else resolve(null);
+        });
+    });
 }
 
 /** 계정을 저장합니다. (이미 id가 존재할 경우 업데이트) */
@@ -57,12 +87,10 @@ export const setAccount = async (id: string, name: string, email: string, apiTok
 export const setJiraIntegratedIssue = async (project: JiraIssueData[]) => {
     try {
         // 트랜잭션 시작
-        db.exec("BEGIN TRANSACTION");
+        await beginTransaction();
         const linksData: JiraProjectLinksDBData[] = [];
-        let test = 0;
 
         for (const item of project) {
-            test += 1;
             const { id, fields } = item;
             const { issuelinks } = fields;
 
@@ -83,11 +111,11 @@ export const setJiraIntegratedIssue = async (project: JiraIssueData[]) => {
         if (linksData.length > 0) await setJiraIssueLinks(linksData);
 
         // 트랜잭션 커밋
-        db.exec("COMMIT");
+        await commitTransaction();
         console.log("setJiraIntegratedIssue 완료");
     } catch (err) {
         // // 오류 발생 시 트랜잭션 롤백
-        db.exec("ROLLBACK");
+        await rollbackTransaction();
         console.error("setJiraIntegratedIssue 오류:", err);
     }
 }
@@ -111,15 +139,15 @@ export const getJiraIssue = async (): Promise<JiraProjectDBData[]> => {
 export const setJiraIssue = async (data: JiraProjectDBData): Promise<void> => {
     try {
         const { id, project_key, project_name, project_type, created, updated, description, summary, assignee_account_id, assignee_display_name,
-            status_name, status_category_id, status_category_name, status_category_color, parent } = data;
+            status_name, status_category_id, status_category_name, status_category_color, parent_id, parent_key, start_date } = data;
 
         const query = `
             INSERT INTO jira_main (
                 id, project_key, project_name, project_type, created, updated,
                 description, summary, assignee_account_id, assignee_display_name,
-                status_name, status_category_id, status_category_name, status_category_color, parent_id, parent_key
+                status_name, status_category_id, status_category_name, status_category_color, parent_id, parent_key, start_date
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT(id) DO UPDATE SET
                 project_key=excluded.project_key,
                 project_name=excluded.project_name,
@@ -135,7 +163,8 @@ export const setJiraIssue = async (data: JiraProjectDBData): Promise<void> => {
                 status_category_name=excluded.status_category_name,
                 status_category_color=excluded.status_category_color,
                 parent_id=excluded.parent_id,
-                parent_key=excluded.parent_key;
+                parent_key=excluded.parent_key,
+                start_date=excluded.start_date;
             `;
 
         const values = [
@@ -153,8 +182,9 @@ export const setJiraIssue = async (data: JiraProjectDBData): Promise<void> => {
             status_category_id,
             status_category_name,
             status_category_color,
-            parent?.id,
-            parent?.key
+            parent_id,
+            parent_key,
+            start_date,
         ];
         await new Promise((resolve, reject) => {
             db.run(query, values, (err) => {
@@ -268,7 +298,7 @@ export const deleteJiraIssueLink = async (issueLinkData: JiraIssueLinkData) => {
 /** 작업내역을 생성 및 업데이트합니다. */
 export const setJiraWorkLog = async (workLog: JiraWorkLogData) => {
     try {
-        const { id, author, updateAuthor, comment, created, updated, started, timeSpentSeconds, issueId } = workLog;
+        const { id, author, comment, created, updated, started, timeSpentSeconds, issueId } = workLog;
 
         const query = `
             INSERT INTO jira_worklog (
@@ -341,14 +371,65 @@ export const getUserAllIssues = async (accountId: string): Promise<JiraProjectDB
 }
 
 /** 검색결과에 맞는 데이터를 가지고옵니다. */
-export const getSearchData = async (filter: string, keyword: string) => {
-    let query = `SELECT * FROM jira_main WHERE ${filter}='${keyword}';`
-    if (!filter && !keyword) query = "SELECT * FROM jira_main;";
+export const getSearchData = async (filter: string, keyword: string, rowsPerPage: number): Promise<MergeJiraData> => {
+    // const notParent = 'parent_id IS NULL';
+    // const contition = filter ? `WHERE ${filter}=${keyword} AND ${notParent} LIMIT ${rowsPerPage}` : `WHERE ${notParent} LIMIT ${rowsPerPage}`;
+    // const query = `SELECT * FROM jira_main ${contition};`;
+    // const query = `
+    //         SELECT * FROM jira_main AS parent
+    //         LEFT JOIN jira_main AS child ON parent.id = child.parent_id
+    //         WHERE parent.parent_id IS NULL;
+    //     `;
+
+    // return new Promise((resolve, reject) => {
+    //     db.all(query, (err, results: JiraProjectDBData[]) => {
+    //         if (err) {
+    //             console.error("getSearchData 쿼리 실행 오류:", err);
+    //             reject([]);
+    //         } else {
+    //             resolve(results);
+    //         }
+    //     });
+    // });
+
+    const parentQuery = `SELECT * FROM jira_main WHERE parent_id IS NULL LIMIT ${rowsPerPage}`;
+
+    return new Promise((resolve, reject) => {
+        db.all(parentQuery, (err, parentRows: JiraProjectDBData[]) => {
+            if (err) {
+                console.error("getSearchData 쿼리 실행 오류:", err);
+                reject({ parents: [], children: [] });
+            } else {
+                const parentIds = parentRows.map(row => row.id);
+
+                if (parentIds.length === 0) {
+                    resolve({ parents: parentRows, children: [] });
+                    return;
+                }
+
+                const placeholders = parentIds.map(() => "?").join(",");
+                const childQuery = `SELECT * FROM jira_main WHERE parent_id IN (${placeholders})`;
+
+                db.all(childQuery, parentIds, (err, childRows: JiraProjectDBData[]) => {
+                    if (err) {
+                        reject({ parents: [], children: [] });
+                    } else {
+                        resolve({ parents: parentRows, children: childRows });
+                    }
+                });
+            }
+        });
+    });
+}
+
+/** 해당 지라프로젝트에 작업로그중 아이디와 총 작업 시간값을 가지고옵니다. */
+export const getWorkTimeGroupByUser = async (issue_id: string) => {
+    const query = `SELECT issue_id, sum(time_spent_seconds) as totalTime, user_id, user_name FROM jira_worklog WHERE issue_id='${issue_id}' group by user_id;`
 
     return new Promise((resolve, reject) => {
         db.all(query, (err, results: JiraProjectDBData[]) => {
             if (err) {
-                console.error("getSearchData 쿼리 실행 오류:", err);
+                console.error("getWorkTimeGroupByUser 쿼리 실행 오류:", err);
                 reject([]);
             } else {
                 resolve(results);

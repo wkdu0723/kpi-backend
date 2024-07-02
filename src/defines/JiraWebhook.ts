@@ -17,6 +17,9 @@ export enum JiraWebhookEvent {
     worklog_created = "worklog_created", // 작업내역 생성
     worklog_updated = "worklog_updated", // 작업내역 업데이트
     worklog_deleted = "worklog_deleted", // 작업 내역 삭제
+    comment_created = "comment_created", // 댓글 등록 (해당 이벤트는 무시함)
+    comment_updated = "comment_updated", // 댓글 수정 (해당 이벤트는 무시함)
+    comment_deleted = "comment_deleted", // 댓글 삭제 (해당 이벤트는 무시함)
 }
 
 /**
@@ -109,6 +112,9 @@ export interface JiraIssueData {
             id: string;
             key: string;
         }
+
+        // 테스트용 지라에서는 순서를 바꿔도, 옵션을 바꿔도 10015로 오는데 투네이션 지라에서는 다르게 올수도있음 테스트해봐야함
+        customfield_10015?: string; // Start Date
     }
 }
 
