@@ -14,10 +14,6 @@ export interface JiraProjectDBData {
     status_category_id: string;
     status_category_name: string;
     status_category_color: string;
-    // parent?: { // 상위 항목
-    //     id: string;
-    //     key: string;
-    // }
     parent_id?: string; // 연결된 부모 프로젝트 아이디값
     parent_key?: string; // 연결된 부모 프로젝트 키값
     start_date?: string; // Start Date
@@ -41,6 +37,7 @@ export interface JiraWorkLogFrontData {
     totalTime: number; // 작업 시간
 }
 
+/** 프론트로 넘겨줄 프로젝트 부모 데이터와 하위일감 데이터입니다. */
 export interface MergeJiraData {
     parents: JiraProjectDBData[];
     children: JiraProjectDBData[];
