@@ -138,17 +138,18 @@ export const getJiraIssue = async (): Promise<JiraProjectDBData[]> => {
 /** 지라 이슈를 저장합니다. */
 export const setJiraIssue = async (data: JiraProjectDBData): Promise<void> => {
     try {
-        const { id, project_key, project_name, project_type, created, updated, description, summary, assignee_account_id, assignee_display_name,
+        const { id, issue_key, project_key, project_name, project_type, created, updated, description, summary, assignee_account_id, assignee_display_name,
             status_name, status_category_id, status_category_name, status_category_color, parent_id, parent_key, start_date } = data;
 
         const query = `
             INSERT INTO jira_main (
-                id, project_key, project_name, project_type, created, updated,
+                id, issue_key, project_key, project_name, project_type, created, updated,
                 description, summary, assignee_account_id, assignee_display_name,
                 status_name, status_category_id, status_category_name, status_category_color, parent_id, parent_key, start_date
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT(id) DO UPDATE SET
+                issue_key=excluded.issue_key,
                 project_key=excluded.project_key,
                 project_name=excluded.project_name,
                 project_type=excluded.project_type,
@@ -169,6 +170,7 @@ export const setJiraIssue = async (data: JiraProjectDBData): Promise<void> => {
 
         const values = [
             id,
+            issue_key,
             project_key,
             project_name,
             project_type,

@@ -1,6 +1,7 @@
 /** 지라 프로젝트 DB 데이터입니다. */
 export interface JiraProjectDBData {
     id: string;
+    issue_key: string;
     project_key: string;
     project_name: string;
     project_type: string;

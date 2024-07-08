@@ -39,9 +39,9 @@ export const jiraDataMigration = async (webhookData: JiraWebhookData) => {
 
 /** 메인 이슈 db테이블에 맞게 데이터를 마이그레이션합니다. */
 export const projectDataMigration = (issueData: JiraIssueData): ProjectDataMigrationResult => {
-    const { id, key: project_key, fields } = issueData;
+    const { id, key: issue_key, fields } = issueData;
     const { project, created, updated, description, summary, status, assignee, creator, issuelinks, parent, customfield_10015: start_date } = fields;
-    const { name: project_name, projectTypeKey: project_type } = project;
+    const { name: project_name, projectTypeKey: project_type, key: project_key } = project;
     const { name: status_name, statusCategory } = status;
     const { id: status_category_id, name: status_category_name, colorName: status_category_color } = statusCategory;
     const assignee_account_id = assignee?.accountId ? assignee.accountId : creator.accountId;
@@ -49,10 +49,8 @@ export const projectDataMigration = (issueData: JiraIssueData): ProjectDataMigra
     const parent_id = parent ? parent.id : undefined;
     const parent_key = parent ? parent.key : undefined;
 
-    console.log("??? parent:", parent);
-
     const data = {
-        id, project_key, project_name, project_type, created, updated, description, summary,
+        id, issue_key, project_key, project_name, project_type, created, updated, description, summary,
         assignee_account_id, assignee_display_name, status_name, status_category_id,
         status_category_name, status_category_color, parent_id, parent_key, start_date,
     }

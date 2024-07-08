@@ -85,6 +85,7 @@ export interface JiraIssueData {
     fields: { // 이슈 필드 데이터
         project: {
             name: string; // 프로젝트 이름
+            key: string; // 프로젝트 key
             projectTypeKey: string; // 프로젝트 타입(software)
         }
         created: string; // 생성 시간 (2024-05-02T15:12:46.375+0900)
