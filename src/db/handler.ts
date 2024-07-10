@@ -137,11 +137,11 @@ export const jiraWorkLogHandler = async (eventType: JiraWebhookEvent, workLog?: 
 }
 
 
-/** 유저의 모든 지라 이슈데이터를 가져오기 위한 핸들러입니다. */
-export const getUserIssuesHandler = async (accountId: string) => {
+/** 유저의 지라 이슈데이터를 가져오기 위한 핸들러입니다. */
+export const getUserIssuesHandler = async (name: string) => {
     try {
-        if (!accountId) return [];
-        const issues = await getUserAllIssues(accountId);
+        if (!name) return [];
+        const issues = await getUserAllIssues(name);
 
         return issues;
     } catch (err) {

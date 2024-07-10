@@ -358,10 +358,10 @@ export const deleteJiraWorkLog = async (id: string) => {
     }
 }
 
-/** 유저의 모든 지라 이슈데이터를 가지고옵니다. */
-export const getUserAllIssues = async (accountId: string): Promise<JiraProjectDBData[]> => {
+/** 유저의 지라 이슈데이터를 가지고옵니다. */
+export const getUserAllIssues = async (name: string): Promise<JiraProjectDBData[]> => {
     return new Promise((resolve, reject) => {
-        db.all(`SELECT * FROM jira_main WHERE assignee_account_id='${accountId}';`, (err, results: JiraProjectDBData[]) => {
+        db.all(`SELECT * FROM jira_main WHERE assignee_account_id='${name}';`, (err, results: JiraProjectDBData[]) => {
             if (err) {
                 console.error("getUserAllIssues 쿼리 실행 오류:", err);
                 reject([]);
@@ -374,30 +374,12 @@ export const getUserAllIssues = async (accountId: string): Promise<JiraProjectDB
 
 /** 검색결과에 맞는 데이터를 가지고옵니다. */
 export const getSearchData = async (filter: string, keyword: string, rowsPerPage: number): Promise<MergeJiraData> => {
-    // const notParent = 'parent_id IS NULL';
-    // const contition = filter ? `WHERE ${filter}=${keyword} AND ${notParent} LIMIT ${rowsPerPage}` : `WHERE ${notParent} LIMIT ${rowsPerPage}`;
-    // const query = `SELECT * FROM jira_main ${contition};`;
-    // const query = `
-    //         SELECT * FROM jira_main AS parent
-    //         LEFT JOIN jira_main AS child ON parent.id = child.parent_id
-    //         WHERE parent.parent_id IS NULL;
-    //     `;
-
-    // return new Promise((resolve, reject) => {
-    //     db.all(query, (err, results: JiraProjectDBData[]) => {
-    //         if (err) {
-    //             console.error("getSearchData 쿼리 실행 오류:", err);
-    //             reject([]);
-    //         } else {
-    //             resolve(results);
-    //         }
-    //     });
-    // });
-
-    const parentQuery = `SELECT * FROM jira_main WHERE parent_id IS NULL LIMIT ${rowsPerPage}`;
+    const notParent = 'parent_id IS NULL';
+    const contition = filter ? `WHERE ${filter} like '%${keyword}%' AND ${notParent} LIMIT ${rowsPerPage}` : `WHERE ${notParent} LIMIT ${rowsPerPage}`;
+    const query = `SELECT * FROM jira_main ${contition};`;
 
     return new Promise((resolve, reject) => {
-        db.all(parentQuery, (err, parentRows: JiraProjectDBData[]) => {
+        db.all(query, (err, parentRows: JiraProjectDBData[]) => {
             if (err) {
                 console.error("getSearchData 쿼리 실행 오류:", err);
                 reject({ parents: [], children: [] });

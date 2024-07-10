@@ -4,7 +4,7 @@ import { getWorkTimeGroupByUser, getSearchData } from "../db/jira";
 import { JiraProjectDBData, JiraWorkLogFrontData } from "../defines/JiraDb";
 const router = express.Router();
 
-/** 유저의 모든 이슈 데이터를 가지고옵니다. */
+/** 유저의 이슈 데이터를 가지고옵니다. */
 const userAllIssues = async (req: any, res: any) => {
     try {
         const accountId = req.query.accountId || "";
@@ -45,7 +45,7 @@ const searchdData = async (req: any, res: any) => {
     }
 }
 
-router.get("/issues/all_issues", userAllIssues);
+router.get("/issues/user", userAllIssues);
 router.get("/issues/search", searchdData);
 
 export default router;
