@@ -1,14 +1,16 @@
 import express from "express";
 import { getUserIssuesHandler } from "../db/handler";
-import { getWorkTimeGroupByUser, getSearchData } from "../db/jira";
+import { getWorkTimeGroupByUser, getSearchData, getSearchUserProjectData } from "../db/jira";
 import { JiraProjectDBData, JiraWorkLogFrontData } from "../defines/JiraDb";
 const router = express.Router();
 
 /** 유저의 이슈 데이터를 가지고옵니다. */
 const userAllIssues = async (req: any, res: any) => {
     try {
-        const accountId = req.query.accountId || "";
-        const allIssues = await getUserIssuesHandler(accountId);
+        const filter = req.query.filter || "";
+        const keyword = req.query.keyword || "";
+        const rowsPerPage = parseInt(req.query.rowsPerPage) || 10;
+        const allIssues = await getSearchUserProjectData(filter, keyword, rowsPerPage);
         res.json(allIssues ? allIssues : []);
     } catch (error) {
         console.error(error);

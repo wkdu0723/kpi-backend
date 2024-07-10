@@ -375,8 +375,8 @@ export const getUserAllIssues = async (name: string): Promise<JiraProjectDBData[
 /** 검색결과에 맞는 데이터를 가지고옵니다. */
 export const getSearchData = async (filter: string, keyword: string, rowsPerPage: number): Promise<MergeJiraData> => {
     const notParent = 'parent_id IS NULL';
-    const contition = filter ? `WHERE ${filter} like '%${keyword}%' AND ${notParent} LIMIT ${rowsPerPage}` : `WHERE ${notParent} LIMIT ${rowsPerPage}`;
-    const query = `SELECT * FROM jira_main ${contition};`;
+    const condition = filter ? `WHERE ${filter} like '%${keyword}%' AND ${notParent} LIMIT ${rowsPerPage}` : `WHERE ${notParent} LIMIT ${rowsPerPage}`;
+    const query = `SELECT * FROM jira_main ${condition};`;
 
     return new Promise((resolve, reject) => {
         db.all(query, (err, parentRows: JiraProjectDBData[]) => {
@@ -401,6 +401,26 @@ export const getSearchData = async (filter: string, keyword: string, rowsPerPage
                         resolve({ parents: parentRows, children: childRows });
                     }
                 });
+            }
+        });
+    });
+}
+
+/**
+ * 유저페이지에서 사용하는 검색입니다.
+ * 유저가 작업한 프로젝트를 기준으로 검색합니다.
+ */
+export const getSearchUserProjectData = async (filter: string, keyword: string, rowsPerPage: number): Promise<JiraProjectDBData[]> => {
+    const condition = filter ? `WHERE ${filter} like '%${keyword}%' LIMIT ${rowsPerPage}` : `LIMIT ${rowsPerPage}`;
+    const query = `SELECT * FROM jira_main ${condition};`;
+
+    return new Promise((resolve, reject) => {
+        db.all(query, (err, resp: JiraProjectDBData[]) => {
+            if (err) {
+                console.error("getSearchUserProjectData 쿼리 실행 오류:", err);
+                reject([]);
+            } else {
+                resolve(resp);
             }
         });
     });
