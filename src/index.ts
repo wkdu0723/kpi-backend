@@ -1,37 +1,48 @@
 import express from "express";
 import bodyParser from "body-parser";
-import ngrok from "@ngrok/ngrok";
-import { jiraDataMigration, setAccountProjectHandler, setJiraAccountHandler } from "./db/handler";
-import { JiraWebhookData } from "./defines/JiraWebhook";
-import controller from "./api/controller";
 import cors from "cors";
+
+import ngrok from "@ngrok/ngrok";
+import {
+  jiraDataMigration,
+  setAccountProjectHandler,
+  setJiraAccountHandler,
+} from "./db/handler";
+
+import { JiraWebhookData } from "./defines/JiraWebhook";
+
+import controller from "./api/controller";
 import { openDataBase } from "./db/jira";
+import router from "./router/router";
 
 const app = express();
 app.use(cors());
 const port = 3000;
 
 app.use(bodyParser.json());
-app.use("/api", controller);
+// app.use("/api", controller); // router export한것이 controller로 들어옴.
+app.use("/api", router);
 
 app.post("/jira/webhook", (req, res) => {
-    const eventData = req.body as JiraWebhookData;
+  const eventData = req.body as JiraWebhookData;
 
-    jiraDataMigration(eventData);
+  jiraDataMigration(eventData);
 });
 
 app.listen(port, () => {
-    console.log(`Server is running on http://localhost:${port}`);
+  console.log(`Server is running on http://localhost:${port}`);
 });
 
 openDataBase();
 
-ngrok.connect({
+ngrok
+  .connect({
     addr: 3000,
     authtoken: "2f8M6urnhQZiyRiGtWm4xjb4FHX_7X6bWYGTdYGXPFmQ45aoT",
-}).then(listener => {
+  })
+  .then((listener) => {
     console.log(`Ingress established at: ${listener.url()}`);
-});
+  });
 
 // setAccountProjectHandler(
 //     "6423c871b05b4e3e7daba91f",

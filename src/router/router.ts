@@ -1,11 +1,8 @@
 import express from "express";
-import { getUserIssuesHandler } from "../db/handler";
-import {
-  getWorkTimeGroupByUser,
-  getSearchData,
-  getSearchUserProjectData,
-} from "../db/jira";
-import { JiraProjectDBData, JiraWorkLogFrontData } from "../defines/JiraDb";
+import { issueSelectBySrch } from "../api/issue.api";
+
+import { getSearchData, getSearchUserProjectData } from "../db/jira";
+
 const router = express.Router();
 
 /** 유저의 이슈 데이터를 가지고옵니다. */
@@ -63,5 +60,10 @@ const searchdData = async (req: any, res: any) => {
 
 router.get("/issues/user", userAllIssues);
 router.get("/issues/search", searchdData);
+
+/**
+ * 신규 개발
+ */
+router.get("/projects/search", issueSelectBySrch);
 
 export default router;
