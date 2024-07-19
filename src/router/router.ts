@@ -1,5 +1,5 @@
 import express from "express";
-import { issueGetBySrch } from "@api/issue.api";
+import { issueGetBySrch } from "../api/issue.api";
 import { getSearchData, getSearchUserProjectData } from "../db/jira";
 
 const router = express.Router();
@@ -58,7 +58,6 @@ const searchdData = async (req: any, res: any) => {
 };
 
 router.get("/issues/user", userAllIssues);
-
 /**
  * 신규 개발
  */

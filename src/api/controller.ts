@@ -61,7 +61,6 @@ const searchdData = async (req: any, res: any) => {
   }
 };
 
-router.get("/issues/user", userAllIssues);
-router.get("/issues/search", searchdData);
+// router.get("/issues/user", userAllIssues);
 
 export default router;

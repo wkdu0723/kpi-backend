@@ -10,6 +10,7 @@ import {
   JiraWorkLogData,
 } from "../defines/JiraWebhook";
 import { projectDataMigration } from "./handler";
+import { issueSearch } from "@defines/query/issue.type";
 
 // 데이터베이스 파일 이름 지정
 const dbFileName = "toonation_kpi.db";
@@ -498,6 +499,34 @@ export const getWorkTimeGroupByUser = async (issue_id: string) => {
         console.error("getWorkTimeGroupByUser 쿼리 실행 오류:", err);
         reject([]);
       } else {
+        resolve(results);
+      }
+    });
+  });
+};
+
+/**
+ * 이슈 검색
+ */
+export const issueSelectBySrch = (srch: issueSearch, paging: any) => {
+  let query = "SELECT * FROM JIRA_MAIN WHERE TRUE";
+
+  if (srch.startDate) {
+    query += ` AND START_DATE = '${srch.startDate}'`;
+  }
+
+  query += ` ORDER BY CREATED DESC LIMIT ${paging.limit ?? 10} OFFSET ${
+    paging.offset ?? 0
+  }`;
+
+  return new Promise((resolve, reject) => {
+    db.all(query, (err, results: JiraProjectDBData[]) => {
+      if (err) {
+        // errorLogger("ErrorSelect");
+        console.log(err);
+        reject([]);
+      } else {
+        // resolve에서 parent 관련이 뭣임
         resolve(results);
       }
     });
