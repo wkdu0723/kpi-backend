@@ -5,15 +5,24 @@ import { issueSearch } from "@defines/query/issue.type";
 import { errorLogger } from "@util/error.util";
 
 const dbFileName = "toonation_kpi.db";
-let dbConnect: sqlite3.Database;
+let db: sqlite3.Database;
 
 /**
  * 이슈 검색
  */
-export const issueSelectBySrch = (srch: issueSearch, paging: Pagination) => {
-  const query = ""; // 검색 결과 조회 쿼리
+export const issueSelectBySrch = (srch: issueSearch, paging: any) => {
+  let query = "SELECT * FROM JIRA_MAIN WHERE TRUE";
+
+  if (srch.startDate) {
+    query += `AND START_DATE = '${srch.startDate}'`;
+  }
+
+  query += `ORDER BY CREATED DESC LIMIT ${paging.limit ?? 10} OFFSET ${
+    paging.offset ?? 0
+  }`;
+
   return new Promise((resolve, reject) => {
-    dbConnect.all(query, (err, results: JiraProjectDBData[]) => {
+    db.all(query, (err, results: JiraProjectDBData[]) => {
       if (err) {
         errorLogger("ErrorSelect");
         // reject({ parents: [], children: [] });

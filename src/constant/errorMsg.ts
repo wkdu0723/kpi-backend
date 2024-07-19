@@ -3,11 +3,11 @@
  */
 export const ErrorResult = {
   ErrorSelect: {
-    code: 4001,
+    code: 800,
     message: "조회 도중 오류가 발생했습니다",
   },
   ErrorUpdate: {
-    code: 4002,
+    code: 801,
     message: "수정 도중 오류가 발생했습니다",
   },
 };
