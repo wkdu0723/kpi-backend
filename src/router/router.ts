@@ -58,9 +58,6 @@ const searchdData = async (req: any, res: any) => {
 };
 
 router.get("/issues/user", userAllIssues);
-/**
- * 신규 개발
- */
 router.get("/issues/search", issueGetBySrch);
 
 export default router;
