@@ -3,10 +3,20 @@ import { IssueSearch } from "../defines/query/issue.type";
 import { db } from "../db/jira";
 
 /**
- * 이슈 검색
+ * 이슈 검색 쿼리
  */
 export const issueSelectBySrch = (srch: IssueSearch, paging: any) => {
   let query = "SELECT * FROM JIRA_MAIN WHERE TRUE";
+
+  if (srch.assigneeId) {
+    query += ` AND ASSIGNEE_ACCOUNT_ID = '${srch.assigneeId}'`;
+  }
+
+  if (srch.assigneeName) {
+    query += ` AND ASSIGNEE_DISPLAY_NAME = '${decodeURIComponent(
+      srch.assigneeName
+    )}'`;
+  }
 
   if (srch.startDate) {
     query += ` AND START_DATE = '${srch.startDate}'`;
@@ -19,7 +29,7 @@ export const issueSelectBySrch = (srch: IssueSearch, paging: any) => {
   return new Promise<JiraProjectDBData[]>((resolve, reject) => {
     db.all(query, (err, results: JiraProjectDBData[]) => {
       if (err) {
-        // errorLogger("ErrorSelect");
+        // errorLogger("ErrorSelect"); // TODO:: error util 추가
         reject([]);
       } else {
         resolve(results);

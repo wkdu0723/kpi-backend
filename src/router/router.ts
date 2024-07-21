@@ -1,6 +1,6 @@
 import express from "express";
-import { issueGetBySrch } from "../api/issue.api";
-import { getSearchData, getSearchUserProjectData } from "../db/jira";
+import { issueGetBySrch, issueGetBySrchAndMapng } from "../api/issue.api";
+import { getSearchUserProjectData } from "../db/jira";
 
 const router = express.Router();
 
@@ -25,39 +25,47 @@ const userAllIssues = async (req: any, res: any) => {
   }
 };
 
-/** 검색결과에 맞는 데이터를 가지고옵니다. */
-const searchdData = async (req: any, res: any) => {
-  try {
-    const filter = req.query.filter || "";
-    const keyword = req.query.keyword || "";
-    const rowsPerPage = parseInt(req.query.rowsPerPage) || 10;
-    const allIssues = await getSearchData(filter, keyword, rowsPerPage);
-    if (!allIssues) res.json([]);
+/**
+ * 작업 로그 sort시 참고용으로 삭제 불가
+ */
+// /** 검색결과에 맞는 데이터를 가지고옵니다. */
+// const searchdData = async (req: any, res: any) => {
+//   try {
+//     const filter = req.query.filter || "";
+//     const keyword = req.query.keyword || "";
+//     const rowsPerPage = parseInt(req.query.rowsPerPage) || 10;
+//     const allIssues = await getSearchData(filter, keyword, rowsPerPage);
+//     if (!allIssues) res.json([]);
 
-    // 모든 이슈 ID에 대해 작업 로그 데이터를 가져옵니다.
-    // const worklogDataPromises = allIssues.map(issue => getWorkTimeGroupByUser(issue.id));
-    // const worklogData = await Promise.all(worklogDataPromises);
-    // const floatWorklog = worklogData.flat() as JiraWorkLogFrontData[];
+//     // 모든 이슈 ID에 대해 작업 로그 데이터를 가져옵니다.
+//     // const worklogDataPromises = allIssues.map(issue => getWorkTimeGroupByUser(issue.id));
+//     // const worklogData = await Promise.all(worklogDataPromises);
+//     // const floatWorklog = worklogData.flat() as JiraWorkLogFrontData[];
 
-    // const issuesWithWorklogs = allIssues.map(issue => {
-    //     return { ...issue, worklogs: floatWorklog.filter((log) => log.issue_id === issue.id) };
-    // });
+//     // const issuesWithWorklogs = allIssues.map(issue => {
+//     //     return { ...issue, worklogs: floatWorklog.filter((log) => log.issue_id === issue.id) };
+//     // });
 
-    // const sortIssue = issuesWithWorklogs.sort((a, b) => {
-    //     return new Date(b.created).getTime() - new Date(a.created).getTime();
-    // });
+//     // const sortIssue = issuesWithWorklogs.sort((a, b) => {
+//     //     return new Date(b.created).getTime() - new Date(a.created).getTime();
+//     // });
 
-    res.json(allIssues);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({
-      success: false,
-      message: "데이터를 가지고 오는데 실패하였습니다.",
-    });
-  }
-};
+//     res.json(allIssues);
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({
+//       success: false,
+//       message: "데이터를 가지고 오는데 실패하였습니다.",
+//     });
+//   }
+// };
 
 router.get("/issues/user", userAllIssues);
-router.get("/issues/search", issueGetBySrch);
+
+/**
+ * 신규 추가
+ */
+router.get("/issues/search", issueGetBySrch); // 검색, 부모-자식 매핑 O
+router.get("/issues/search/no-mapng", issueGetBySrchAndMapng); // 검색, 부모-자식 매핑 X
 
 export default router;
