@@ -65,7 +65,7 @@ router.get("/issues/user", userAllIssues);
 /**
  * 신규 추가
  */
-router.get("/issues/search", issueGetBySrch); // 검색, 부모-자식 매핑 O
-router.get("/issues/search/no-mapng", issueGetBySrchAndMapng); // 검색, 부모-자식 매핑 X
+router.get("/issues/search", issueGetBySrch); // 검색, 부모-자식 매핑 X
+router.get("/issues/search/mapng", issueGetBySrchAndMapng); // 검색, 부모-자식 매핑 O
 
 export default router;
