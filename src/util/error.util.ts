@@ -1,10 +1,12 @@
-import { ErrorResult } from "constant/errorMsg";
+function logError(error: unknown) {
+  const { name, message, stack } = error as Error & { stack?: string };
+  const errorOriginLog =
+    stack?.split("\n").slice(1, 4).join("\n") ?? "invokeOrigin not found";
 
-/**
- * 타입에 맞는 에러를 .error()로 기록
- * @param errorType
- */
-export const errorLogger = (errorType: keyof typeof ErrorResult) => {
-  const error = ErrorResult[errorType];
-  console.error(`Error Code: ${error.code}, Message: ${error.message}`);
-};
+  const errorMsgFormat = (errType: string, message: string) =>
+    `ERROR_TYPE: ${errType}\nERROR_ORIGIN: ${errorOriginLog}\nERROR_MESSAGE: ${message}`;
+
+  console.error(errorMsgFormat(name, message));
+}
+
+export { logError };

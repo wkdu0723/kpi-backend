@@ -1,66 +1,68 @@
-import express from "express";
-import { getUserIssuesHandler } from "../db/handler";
-import {
-  getWorkTimeGroupByUser,
-  getSearchData,
-  getSearchUserProjectData,
-} from "../db/jira";
-import { JiraProjectDBData, JiraWorkLogFrontData } from "../defines/JiraDb";
-const router = express.Router();
+// import express from "express";
 
-/** 유저의 이슈 데이터를 가지고옵니다. */
-const userAllIssues = async (req: any, res: any) => {
-  try {
-    const filter = req.query.filter || "";
-    const keyword = req.query.keyword || "";
-    const rowsPerPage = parseInt(req.query.rowsPerPage) || 10;
-    const allIssues = await getSearchUserProjectData(
-      filter,
-      keyword,
-      rowsPerPage
-    );
-    res.json(allIssues ? allIssues : []);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({
-      success: false,
-      message: "이슈를 가지고 오는데 실패하였습니다.",
-    });
-  }
-};
+// import { getUserIssuesHandler } from "../db/handler";
+// import {
+//   getWorkTimeGroupByUser,
+//   getSearchData,
+//   getSearchUserProjectData,
+// } from "../db/jira";
+// import { JiraProjectDBData, JiraWorkLogFrontData } from "../defines/JiraDb";
+// const router = express.Router();
 
-/** 검색결과에 맞는 데이터를 가지고옵니다. */
-const searchdData = async (req: any, res: any) => {
-  try {
-    const filter = req.query.filter || "";
-    const keyword = req.query.keyword || "";
-    const rowsPerPage = parseInt(req.query.rowsPerPage) || 10;
-    const allIssues = await getSearchData(filter, keyword, rowsPerPage);
-    if (!allIssues) res.json([]);
+// /** 유저의 이슈 데이터를 가지고옵니다. */
+// const userAllIssues = async (req: any, res: any) => {
+//   try {
+//     const filter = req.query.filter || "";
+//     const keyword = req.query.keyword || "";
+//     const rowsPerPage = parseInt(req.query.rowsPerPage) || 10;
+//     const allIssues = await getSearchUserProjectData(
+//       filter,
+//       keyword,
+//       rowsPerPage
+//     );
+//     res.json(allIssues ? allIssues : []);
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({
+//       success: false,
+//       message: "이슈를 가지고 오는데 실패하였습니다.",
+//     });
+//   }
+// };
 
-    // 모든 이슈 ID에 대해 작업 로그 데이터를 가져옵니다.
-    // const worklogDataPromises = allIssues.map(issue => getWorkTimeGroupByUser(issue.id));
-    // const worklogData = await Promise.all(worklogDataPromises);
-    // const floatWorklog = worklogData.flat() as JiraWorkLogFrontData[];
+// /** 검색결과에 맞는 데이터를 가지고옵니다. */
+// export const searchdData = async (req: any, res: any) => {
+//   try {
+//     const filter = req.query.filter || "";
+//     const keyword = req.query.keyword || "";
+//     const rowsPerPage = parseInt(req.query.rowsPerPage) || 10;
+//     const allIssues = await getSearchData(filter, keyword, rowsPerPage);
+//     if (!allIssues) res.json([]);
 
-    // const issuesWithWorklogs = allIssues.map(issue => {
-    //     return { ...issue, worklogs: floatWorklog.filter((log) => log.issue_id === issue.id) };
-    // });
+//     // 모든 이슈 ID에 대해 작업 로그 데이터를 가져옵니다.
+//     const worklogDataPromises = allIssues.map(issue => getWorkTimeGroupByUser(issue.id));
+//     const worklogData = await Promise.all(worklogDataPromises);
+//     const floatWorklog = worklogData.flat() as JiraWorkLogFrontData[];
 
-    // const sortIssue = issuesWithWorklogs.sort((a, b) => {
-    //     return new Date(b.created).getTime() - new Date(a.created).getTime();
-    // });
+//     const issuesWithWorklogs = allIssues.map(issue => {
+//         return { ...issue, worklogs: floatWorklog.filter((log) => log.issue_id === issue.id) };
+//     });
 
-    res.json(allIssues);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({
-      success: false,
-      message: "데이터를 가지고 오는데 실패하였습니다.",
-    });
-  }
-};
+//     const sortIssue = issuesWithWorklogs.sort((a, b) => {
+//         return new Date(b.created).getTime() - new Date(a.created).getTime();
+//     });
 
-// router.get("/issues/user", userAllIssues);
+//     const
 
-export default router;
+//     res.json(allIssues);
+
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({
+//       success: false,
+//       message: "데이터를 가지고 오는데 실패하였습니다.",
+//     });
+//   }
+// };
+
+// export default router;

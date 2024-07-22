@@ -1,6 +1,7 @@
 import express from "express";
 import { issueGetBySrch, issueGetBySrchAndMapng } from "../api/issue.api";
-import { getSearchUserProjectData } from "../db/jira";
+import { getSearchUserProjectData, getWorkTimeGroupByUser } from "../db/jira";
+import { JiraWorkLogFrontData } from "@defines/JiraDb";
 
 const router = express.Router();
 
@@ -25,10 +26,7 @@ const userAllIssues = async (req: any, res: any) => {
   }
 };
 
-/**
- * 작업 로그 sort시 참고용으로 삭제 불가
- */
-// /** 검색결과에 맞는 데이터를 가지고옵니다. */
+/** 검색결과에 맞는 데이터를 가지고옵니다. */
 // const searchdData = async (req: any, res: any) => {
 //   try {
 //     const filter = req.query.filter || "";
@@ -38,19 +36,22 @@ const userAllIssues = async (req: any, res: any) => {
 //     if (!allIssues) res.json([]);
 
 //     // 모든 이슈 ID에 대해 작업 로그 데이터를 가져옵니다.
-//     // const worklogDataPromises = allIssues.map(issue => getWorkTimeGroupByUser(issue.id));
-//     // const worklogData = await Promise.all(worklogDataPromises);
-//     // const floatWorklog = worklogData.flat() as JiraWorkLogFrontData[];
+//     const worklogDataPromises = allIssues.map(issue => getWorkTimeGroupByUser(issue.id));
+//     const worklogData = await Promise.all(worklogDataPromises);
+//     const floatWorklog = worklogData.flat() as JiraWorkLogFrontData[];
 
-//     // const issuesWithWorklogs = allIssues.map(issue => {
-//     //     return { ...issue, worklogs: floatWorklog.filter((log) => log.issue_id === issue.id) };
-//     // });
+//     const issuesWithWorklogs = allIssues.map(issue => {
+//         return { ...issue, worklogs: floatWorklog.filter((log) => log.issue_id === issue.id) };
+//     });
 
-//     // const sortIssue = issuesWithWorklogs.sort((a, b) => {
-//     //     return new Date(b.created).getTime() - new Date(a.created).getTime();
-//     // });
+//     const sortIssue = issuesWithWorklogs.sort((a, b) => {
+//         return new Date(b.created).getTime() - new Date(a.created).getTime();
+//     });
+
+//     const
 
 //     res.json(allIssues);
+
 //   } catch (error) {
 //     console.error(error);
 //     res.status(500).json({
@@ -67,5 +68,7 @@ router.get("/issues/user", userAllIssues);
  */
 router.get("/issues/search", issueGetBySrch); // 검색, 부모-자식 매핑 X
 router.get("/issues/search/mapng", issueGetBySrchAndMapng); // 검색, 부모-자식 매핑 O
+
+// router.get("/test", searchdData);
 
 export default router;
