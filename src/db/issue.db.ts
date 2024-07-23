@@ -1,6 +1,6 @@
 import { JiraProjectDBData } from "../defines/JiraDb";
-import { IssueSearch } from "../defines/query/issue.type";
-import { db } from "../db/jira";
+import { IssueSearch } from "../defines/db/issue.type";
+import { db } from "./jira";
 
 /**
  * 이슈 검색 쿼리

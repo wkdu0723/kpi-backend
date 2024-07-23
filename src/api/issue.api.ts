@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import { IssueSearch, IssueSrchVO } from "../defines/query/issue.type";
+import { IssueSearch, IssueSrchVO } from "../defines/db/issue.type";
 
-import { issueSelectBySrch } from "../query/issue.query";
+import { issueSelectBySrch } from "../db/issue.db";
 
 import { logError } from "../util/error.util";
 

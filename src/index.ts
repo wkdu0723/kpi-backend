@@ -8,11 +8,10 @@ import {
   setAccountProjectHandler,
   setJiraAccountHandler,
 } from "./db/handler";
+import { openDataBase } from "./db/jira";
 
 import { JiraWebhookData } from "./defines/JiraWebhook";
 
-import controller from "./api/controller";
-import { openDataBase } from "./db/jira";
 import router from "./router/router";
 
 const app = express();
@@ -20,7 +19,6 @@ app.use(cors());
 const port = 3000;
 
 app.use(bodyParser.json());
-// app.use("/api", controller); // router export한것이 controller로 들어옴.
 app.use("/api", router);
 
 app.post("/jira/webhook", (req, res) => {
