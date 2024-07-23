@@ -47,17 +47,17 @@ const mapngPrntWithChild = (issues: IssueSrchVO[]): IssueSrchVO[] => {
  * @returns issues 이슈 리스트
  */
 const issueGetBySrchCommon = async (req: Request) => {
-  const { startDate, assigneeId, assigneeName } = req.query;
+  const { startDate, userId, userName, limit, offset } = req.query;
 
   const srch: IssueSearch = {
     startDate: startDate ? startDate.toString() : "",
-    assigneeId: assigneeId ? assigneeId.toString() : "",
-    assigneeName: assigneeName ? assigneeName.toString() : "",
+    userId: userId ? userId.toString() : "",
+    userName: userName ? userName.toString() : "",
   };
 
   const page = {
-    limit: 10,
-    offset: 0,
+    limit: limit ?? 10,
+    offset: offset ?? 0,
   };
 
   try {

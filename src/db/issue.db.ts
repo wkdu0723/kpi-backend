@@ -8,13 +8,13 @@ import { db } from "./jira";
 export const issueSelectBySrch = (srch: IssueSearch, paging: any) => {
   let query = "SELECT * FROM JIRA_MAIN WHERE TRUE";
 
-  if (srch.assigneeId) {
-    query += ` AND ASSIGNEE_ACCOUNT_ID = '${srch.assigneeId}'`;
+  if (srch.userId) {
+    query += ` AND ASSIGNEE_ACCOUNT_ID = '${srch.userId}'`;
   }
 
-  if (srch.assigneeName) {
+  if (srch.userName) {
     query += ` AND ASSIGNEE_DISPLAY_NAME = '${decodeURIComponent(
-      srch.assigneeName
+      srch.userName
     )}'`;
   }
 

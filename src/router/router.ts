@@ -3,7 +3,7 @@ import { issueGetBySrch, issueGetBySrchAndMapng } from "../api/issue.api";
 import { getSearchUserProjectData, getWorkTimeGroupByUser } from "../db/jira";
 import { JiraWorkLogFrontData } from "@defines/JiraDb";
 
-import { userList } from "../api/user.api";
+import { userIssueAndWorkTimeBySrch, userList } from "../api/user.api";
 
 const router = express.Router();
 
@@ -75,6 +75,6 @@ router.get("/issues/search/mapng", issueGetBySrchAndMapng);
 
 // 전체 사용자 리스트 조회
 router.get("/users", userList);
-router.get("/user/issues", userList); // TODO:
+router.get("/user/issues", userIssueAndWorkTimeBySrch);
 
 export default router;
