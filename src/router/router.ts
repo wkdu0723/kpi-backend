@@ -75,5 +75,6 @@ router.get("/issues/search/mapng", issueGetBySrchAndMapng);
 
 // 전체 사용자 리스트 조회
 router.get("/users", userList);
+router.get("/user/issues", userList); // TODO:
 
 export default router;
