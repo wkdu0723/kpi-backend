@@ -11,7 +11,6 @@ import {
 
 import { JiraWebhookData } from "./defines/JiraWebhook";
 
-import controller from "./api/controller";
 import { openDataBase } from "./db/jira";
 import router from "./router/router";
 
