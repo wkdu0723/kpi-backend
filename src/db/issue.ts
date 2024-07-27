@@ -68,16 +68,19 @@ export const dbSelectTopIssueList = (limit: number, offset: number) => {
   });
 };
 
-export const dbSelectTopIssueCount = () => {
-  return new Promise<object>((resolve, reject) => {
+export const dbSelectTopIssueCount = (): Promise<Map<string, number>> => {
+  return new Promise<Map<string, number>>((resolve, reject) => {
     db.get(
       toCountWrapper(queryBySelectTopIssues),
-      (err: Error, result: object) => {
+      (err: Error, result: { totalCount: number }) => {
         if (err) {
           logError(err);
-          reject(0);
+          reject(new Map<string, number>([["totalCount", 0]]));
         } else {
-          resolve(result);
+          const countMap = new Map<string, number>([
+            ["totalCount", result.totalCount],
+          ]);
+          resolve(countMap);
         }
       }
     );

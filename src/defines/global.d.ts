@@ -1,11 +1,14 @@
 export {};
 
 declare global {
-  /**
-   * 페이징 처리
-   */
-  interface Pagination {
+  interface PageInfo {
+    totalCount: number;
     limit: number;
     offset: number;
+  }
+
+  interface CustomPage<T> {
+    list: Array<T>;
+    pageInfo: PageInfo;
   }
 }

@@ -117,10 +117,10 @@ export const selectTopIssueList = async (req: Request, resp: Response) => {
 
     const topissueCount = await dbSelectTopIssueCount();
 
-    const customPage = {
+    const customPage: CustomPage<IssueSrchVO> = {
       list: topIssueList,
       pageInfo: {
-        ...topissueCount,
+        totalCount: topissueCount.get("totalCount") ?? 0,
         limit: Number(req.query.limit) ?? 0,
         offset: Number(req.query.offset) ?? 0,
       },
