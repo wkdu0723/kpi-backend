@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
-import { dbUserIssueAndWorkTimeListBySrch, dbUserList } from "../db/user.db";
+import { dbUserIssueAndWorkTimeListBySrch, dbUserList } from "../dbt/user";
 
 import { logError } from "../util/error.util";
-import { IssueSearch } from "@defines/db/issue.type";
+import { IssueSearch } from "@defines/db/issue";
 
 export const userList = async (req: Request, resp: Response) => {
   try {

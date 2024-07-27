@@ -1,9 +1,9 @@
-import { User } from "../defines/db/user.type";
+import { User } from "../defines/db/user";
 
-import { db } from "../db/jira";
+import { db } from "./jira";
 
 import { logError } from "../util/error.util";
-import { IssueSearch } from "@defines/db/issue.type";
+import { IssueSearch } from "@defines/db/issue";
 
 /**
  * 사용자 리스트 조회

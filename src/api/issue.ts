@@ -1,7 +1,11 @@
 import { Request, Response } from "express";
-import { IssueSearch, IssueSrchVO } from "../defines/db/issue.type";
+import { IssueSearch, IssueSrchVO } from "../defines/db/issue";
 
-import { issueSelectBySrch } from "../db/issue.db";
+import {
+  dbSelectTopIssueCount,
+  dbSelectTopIssueList,
+  issueSelectBySrch,
+} from "../dbt/issue";
 
 import { logError } from "../util/error.util";
 
@@ -97,5 +101,32 @@ export const issueGetBySrchAndMapng = async (req: Request, resp: Response) => {
   } catch (e) {
     logError(e);
     return [];
+  }
+};
+
+/**
+ * renewal
+ */
+export const selectTopissueList = async (req: Request, resp: Response) => {
+  const { offset, limit } = req.query;
+  try {
+    const topIssueList = await dbSelectTopIssueList(
+      Number(offset) ?? 0,
+      Number(limit) ?? 10
+    );
+    const topissueCount = await dbSelectTopIssueCount();
+
+    const customPage = {
+      list: topIssueList,
+      pageInfo: {
+        totalCount: topissueCount,
+        limit: Number(req.query.limit) ?? 0,
+        offset: Number(req.query.offset) ?? 0,
+      },
+    };
+
+    return resp.json(customPage);
+  } catch (err) {
+    logError(err);
   }
 };

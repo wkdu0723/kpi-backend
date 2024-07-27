@@ -13,12 +13,13 @@
     "paths": {
       "@api/*": ["api/*"],
       "@constant/*": ["constant/*"],
+      "@db/*": ["dbt/*"],
       "@defines/*": ["defines/*"],
       "@query/*": ["query/*"],
       "@util/*": ["util/*"]
     },
     "typeRoots": ["./src/defines", "./node_modules/@types"]
   },
-  // "include": ["./src/**/*"]
-  "include": ["./src/*", "./src/defines/global.type.d.ts"]
+  // "include": ["./src/**/*", "./src/defines/global.type.d.ts"]
+  "include": ["./src/**/*"]
 }
