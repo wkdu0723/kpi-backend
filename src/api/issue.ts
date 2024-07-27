@@ -107,19 +107,20 @@ export const issueGetBySrch = async (req: Request, resp: Response) => {
 /**
  * renewal
  */
-export const selectTopissueList = async (req: Request, resp: Response) => {
+export const selectTopIssueList = async (req: Request, resp: Response) => {
   const { offset, limit } = req.query;
   try {
     const topIssueList = await dbSelectTopIssueList(
-      Number(offset) ?? 0,
-      Number(limit) ?? 10
+      Number(limit) ?? 10,
+      Number(offset) ?? 0
     );
+
     const topissueCount = await dbSelectTopIssueCount();
 
     const customPage = {
       list: topIssueList,
       pageInfo: {
-        totalCount: topissueCount,
+        ...topissueCount,
         limit: Number(req.query.limit) ?? 0,
         offset: Number(req.query.offset) ?? 0,
       },

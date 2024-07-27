@@ -2,7 +2,7 @@ import { logError } from "@util/error";
 import { JiraProjectDBData } from "../defines/JiraDb";
 import { IssueSearch } from "../defines/db/issue";
 import { db } from "./jira";
-import { queryCountWrapper } from "@/db/global";
+import { toCountWrapper } from "@db/global";
 
 /**
  * 이슈 검색 쿼리
@@ -54,7 +54,7 @@ const queryBySelectTopIssues = `select * from jira_main where parent_id is null`
  * @returns
  */
 export const dbSelectTopIssueList = (limit: number, offset: number) => {
-  const query = queryBySelectTopIssues + ` limit ${limit} offset ${offset}`;
+  const query = `${queryBySelectTopIssues} limit ${limit} offset ${offset};`;
 
   return new Promise<JiraProjectDBData[]>((resolve, reject) => {
     db.all(query, (err, results: JiraProjectDBData[]) => {
@@ -69,15 +69,15 @@ export const dbSelectTopIssueList = (limit: number, offset: number) => {
 };
 
 export const dbSelectTopIssueCount = () => {
-  return new Promise<JiraProjectDBData[]>((resolve, reject) => {
-    db.all(
-      queryCountWrapper(queryBySelectTopIssues),
-      (err, results: JiraProjectDBData[]) => {
+  return new Promise<object>((resolve, reject) => {
+    db.get(
+      toCountWrapper(queryBySelectTopIssues),
+      (err: Error, result: object) => {
         if (err) {
           logError(err);
           reject(0);
         } else {
-          resolve(results);
+          resolve(result);
         }
       }
     );

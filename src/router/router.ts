@@ -1,7 +1,7 @@
 import express from "express";
-import { issueGetBySrch, selectTopissueList } from "../api/issue";
-import { getSearchUserProjectData } from "../db/jira";
-import { userIssueAndWorkTimeBySrch, userList } from "../api/user";
+import { issueGetBySrch, selectTopIssueList } from "@api/issue";
+import { getSearchUserProjectData } from "@db/jira";
+import { userIssueAndWorkTimeBySrch, userList } from "@api/user";
 
 const router = express.Router();
 
@@ -77,6 +77,7 @@ router.get("/user/issues", userIssueAndWorkTimeBySrch);
 
 // renewal
 
-router.get("/issues/top", selectTopissueList);
+// 최상위 이슈들 조회
+router.get("/issues/top", selectTopIssueList);
 
 export default router;
