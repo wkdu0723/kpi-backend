@@ -48,7 +48,7 @@ export const issueSelectBySrch = (srch: IssueSearch, paging: any) => {
  */
 
 // renewal
-const queryBySelectTopIssues = `select * from jira_main where parent_id is null`;
+const queryBySelectTopIssues = `select * from jira_main where parent_id is null order by created desc`;
 /**
  * 최상위 이슈만을 조회
  * @returns
