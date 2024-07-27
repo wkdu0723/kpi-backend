@@ -48,13 +48,13 @@ export const issueSelectBySrch = (srch: IssueSearch, paging: any) => {
  */
 
 // renewal
-const queryBySelectTopIssues = `select * from jira_main where parent_id is null order by created desc`;
+const queryBySelectTopIssues = `SELECT * FROM JIRA_MAIN WHERE PARENT_ID IS NULL ORDER BY CREATED DESC`;
 /**
  * 최상위 이슈만을 조회
  * @returns
  */
 export const dbSelectTopIssueList = (limit: number, offset: number) => {
-  const query = `${queryBySelectTopIssues} limit ${limit} offset ${offset};`;
+  const query = `${queryBySelectTopIssues} LIMIT ${limit} OFFSET ${offset};`;
 
   return new Promise<JiraProjectDBData[]>((resolve, reject) => {
     db.all(query, (err, results: JiraProjectDBData[]) => {
@@ -68,6 +68,10 @@ export const dbSelectTopIssueList = (limit: number, offset: number) => {
   });
 };
 
+/**
+ * 최상위 이슈의 전체 count를 조회
+ * @returns Map<string, nubmer> { totalCount: 2 }
+ */
 export const dbSelectTopIssueCount = (): Promise<Map<string, number>> => {
   return new Promise<Map<string, number>>((resolve, reject) => {
     db.get(
@@ -84,5 +88,25 @@ export const dbSelectTopIssueCount = (): Promise<Map<string, number>> => {
         }
       }
     );
+  });
+};
+
+/**
+ * 최상위 이슈 id로 하위 issueList를 조회
+ * @param topIssueId 최상위 이슈 id
+ * @returns JiraProjectDBData[]
+ */
+export const dbSelectTopIssueListByTopIssueId = (topIssueId: string) => {
+  const query = `SELECT * FROM JIRA_MAIN WHERE PARENT_ID = '${topIssueId}'`;
+
+  return new Promise<JiraProjectDBData[]>((resolve, reject) => {
+    db.all(query, (err, results: JiraProjectDBData[]) => {
+      if (err) {
+        logError(err);
+        reject([]);
+      } else {
+        resolve(results);
+      }
+    });
   });
 };

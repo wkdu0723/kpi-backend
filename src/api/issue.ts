@@ -4,8 +4,9 @@ import { IssueSearch, IssueSrchVO } from "../defines/db/issue";
 import {
   dbSelectTopIssueCount,
   dbSelectTopIssueList,
+  dbSelectTopIssueListByTopIssueId,
   issueSelectBySrch,
-} from "../db/issue";
+} from "@db/issue";
 
 import { logError } from "../util/error";
 
@@ -127,6 +128,21 @@ export const selectTopIssueList = async (req: Request, resp: Response) => {
     };
 
     return resp.json(customPage);
+  } catch (err) {
+    logError(err);
+  }
+};
+
+export const selectIssueListByTopIssueId = async (
+  req: Request,
+  resp: Response
+) => {
+  const { topIssueId } = req.params;
+  try {
+    const issueList = await dbSelectTopIssueListByTopIssueId(
+      topIssueId?.toString() ?? ""
+    );
+    return resp.json(issueList);
   } catch (err) {
     logError(err);
   }

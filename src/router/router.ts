@@ -1,5 +1,9 @@
 import express from "express";
-import { issueGetBySrch, selectTopIssueList } from "@api/issue";
+import {
+  issueGetBySrch,
+  selectIssueListByTopIssueId,
+  selectTopIssueList,
+} from "@api/issue";
 import { getSearchUserProjectData } from "@db/jira";
 import { userIssueAndWorkTimeBySrch, userList } from "@api/user";
 
@@ -66,18 +70,22 @@ router.get("/issues/user", userAllIssues);
 /**
  * 신규 추가
  */
-// 검색, 부모-자식 매핑 X
-router.get("/issues/search", issueGetBySrch);
-// 검색, 부모-자식 매핑 O
-// router.get("/issues/search/mapng", issueGetBySrchAndMapng);
+// // 검색, 부모-자식 매핑 X
+// router.get("/issues/search", issueGetBySrch);
+// // 검색, 부모-자식 매핑 O
+// // router.get("/issues/search/mapng", issueGetBySrchAndMapng);
 
-// 전체 사용자 리스트 조회
-router.get("/users", userList);
-router.get("/user/issues", userIssueAndWorkTimeBySrch);
+// // 전체 사용자 리스트 조회
+// router.get("/users", userList);
+// router.get("/user/issues", userIssueAndWorkTimeBySrch);
 
 // renewal
 
 // 최상위 이슈들 조회
 router.get("/issues/top", selectTopIssueList);
+// 최상위 이슈 id로 하위 리스트 조회
+router.get("/issues/:topIssueId/sub", selectIssueListByTopIssueId);
+// 이슈 검색
+router.get("/issues/search", selectTopIssueList);
 
 export default router;
