@@ -1,7 +1,8 @@
-import { logError } from "@util/error.util";
+import { logError } from "@util/error";
 import { JiraProjectDBData } from "../defines/JiraDb";
 import { IssueSearch } from "../defines/db/issue";
 import { db } from "./jira";
+import { queryCountWrapper } from "@/db/global";
 
 /**
  * 이슈 검색 쿼리

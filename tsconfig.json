@@ -9,17 +9,12 @@
     "skipLibCheck": true,
     "allowSyntheticDefaultImports": true,
     "moduleResolution": "node",
-    "baseUrl": "./src",
+    "baseUrl": "./",
     "paths": {
-      "@api/*": ["api/*"],
-      "@constant/*": ["constant/*"],
-      "@db/*": ["dbt/*"],
-      "@defines/*": ["defines/*"],
-      "@query/*": ["query/*"],
-      "@util/*": ["util/*"]
+      "@*": ["./src/*"]
     },
     "typeRoots": ["./src/defines", "./node_modules/@types"]
   },
-  // "include": ["./src/**/*", "./src/defines/global.type.d.ts"]
-  "include": ["./src/**/*"]
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "exclude": ["node_modules"]
 }

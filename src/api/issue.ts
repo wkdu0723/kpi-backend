@@ -5,45 +5,45 @@ import {
   dbSelectTopIssueCount,
   dbSelectTopIssueList,
   issueSelectBySrch,
-} from "../dbt/issue";
+} from "../db/issue";
 
-import { logError } from "../util/error.util";
+import { logError } from "../util/error";
 
 /**
  * 자식을 부모 이슈의 child[]에 추가
  * @param issues 이슈 리스트
  * @returns rootIssueVOs 부모와 자식을 매핑한 이슈 리스트
  */
-const mapngPrntWithChild = (issues: IssueSrchVO[]): IssueSrchVO[] => {
-  const store = new Map<string, IssueSrchVO>();
+// const mapngPrntWithChild = (issues: IssueSrchVO[]): IssueSrchVO[] => {
+//   const store = new Map<string, IssueSrchVO>();
 
-  // 모든 issue를 store에 저장하고 children 배열을 추가함
-  issues.forEach((item: IssueSrchVO) => {
-    store.set(item.id, item);
-  });
+//   // 모든 issue를 store에 저장하고 children 배열을 추가함
+//   issues.forEach((item: IssueSrchVO) => {
+//     store.set(item.id, item);
+//   });
 
-  issues.forEach((item: IssueSrchVO) => {
-    if (item.parent_id) {
-      const parent = store.get(item.parent_id);
-      if (parent) {
-        if (!parent.childs) {
-          parent.childs = []; // 없으면 초기화하고 push
-        }
-        parent.childs.push(item);
-      }
-    }
-  });
+//   issues.forEach((item: IssueSrchVO) => {
+//     if (item.parent_id) {
+//       const parent = store.get(item.parent_id);
+//       if (parent) {
+//         if (!parent.childs) {
+//           parent.childs = []; // 없으면 초기화하고 push
+//         }
+//         parent.childs.push(item);
+//       }
+//     }
+//   });
 
-  const rootIssueVOs: IssueSrchVO[] = [];
+//   const rootIssueVOs: IssueSrchVO[] = [];
 
-  issues.forEach((item: IssueSrchVO) => {
-    if (!item.parent_id) {
-      rootIssueVOs.push(item);
-    }
-  });
+//   issues.forEach((item: IssueSrchVO) => {
+//     if (!item.parent_id) {
+//       rootIssueVOs.push(item);
+//     }
+//   });
 
-  return rootIssueVOs;
-};
+//   return rootIssueVOs;
+// };
 
 /**
  * 이슈 리스트 검색 조회 공통 구현
@@ -94,15 +94,15 @@ export const issueGetBySrch = async (req: Request, resp: Response) => {
  * @param resp 응답
  * @returns Response<any, Record<string, any>>
  */
-export const issueGetBySrchAndMapng = async (req: Request, resp: Response) => {
-  try {
-    const issues = await issueGetBySrchCommon(req);
-    return resp.json(mapngPrntWithChild(issues));
-  } catch (e) {
-    logError(e);
-    return [];
-  }
-};
+// export const issueGetBySrchAndMapng = async (req: Request, resp: Response) => {
+//   try {
+//     const issues = await issueGetBySrchCommon(req);
+//     return resp.json(mapngPrntWithChild(issues));
+//   } catch (e) {
+//     logError(e);
+//     return [];
+//   }
+// };
 
 /**
  * renewal

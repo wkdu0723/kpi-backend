@@ -1,12 +1,6 @@
 import express from "express";
-import {
-  issueGetBySrch,
-  issueGetBySrchAndMapng,
-  selectTopissueList,
-} from "../api/issue";
-import { getSearchUserProjectData, getWorkTimeGroupByUser } from "../dbt/jira";
-import { JiraWorkLogFrontData } from "@defines/JiraDb";
-
+import { issueGetBySrch, selectTopissueList } from "../api/issue";
+import { getSearchUserProjectData } from "../db/jira";
 import { userIssueAndWorkTimeBySrch, userList } from "../api/user";
 
 const router = express.Router();
@@ -75,7 +69,7 @@ router.get("/issues/user", userAllIssues);
 // 검색, 부모-자식 매핑 X
 router.get("/issues/search", issueGetBySrch);
 // 검색, 부모-자식 매핑 O
-router.get("/issues/search/mapng", issueGetBySrchAndMapng);
+// router.get("/issues/search/mapng", issueGetBySrchAndMapng);
 
 // 전체 사용자 리스트 조회
 router.get("/users", userList);

@@ -7,8 +7,8 @@ import {
   jiraDataMigration,
   setAccountProjectHandler,
   setJiraAccountHandler,
-} from "./dbt/handler";
-import { openDataBase } from "./dbt/jira";
+} from "./db/handler";
+import { openDataBase } from "./db/jira";
 
 import { JiraWebhookData } from "./defines/JiraWebhook";
 
