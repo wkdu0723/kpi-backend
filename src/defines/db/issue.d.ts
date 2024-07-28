@@ -34,7 +34,8 @@ export interface IssueSrch {
 export interface IssueVO extends JiraProjectDBData {
   /** 하위(서브) 이슈 리스트  */
   subIssues?: IssueSrchVO[];
+}
 
-  /** 이슈별 작업기록 리스트 */
-  worklogs?: WorklogDBData[];
+export interface UserIssueVO extends JiraProjectDBData {
+  work_seconds: number;
 }

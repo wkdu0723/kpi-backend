@@ -1,9 +1,10 @@
-import { User } from "../defines/db/user";
-
 import { db } from "./jira";
 
-import { logError } from "../util/error";
-import { IssueSearch } from "@defines/db/issue";
+import { User } from "@defines/db/user";
+import { IssueSrch, UserIssueVO } from "@defines/db/issue";
+
+import { logError } from "@util/error";
+import { toCountWrapper } from "./global";
 
 /**
  * 사용자 리스트 조회
@@ -23,39 +24,43 @@ export const dbUserList = (): Promise<User[]> => {
   });
 };
 
-export const dbUserIssueAndWorkTimeListBySrch = (
-  srch: IssueSearch,
-  page: any
+/**
+ *
+ * @param srch
+ */
+const queryBySelectUserIssueAndWorkTimeListBySrchWithoutPaging = (
+  srch: IssueSrch
 ) => {
-  let query = `
-    WITH ISSUES AS (
-        SELECT * 
-        FROM JIRA_MAIN 
-        WHERE ASSIGNEE_DISPLAY_NAME = '${srch.userName}'
-    ),
-    WORKLOGS AS (
-        SELECT * 
-        FROM JIRA_WORKLOG 
-        WHERE USER_NAME = '${srch.userName}'
-    ),
-    COMBINED AS (
-        SELECT ISU.*
-        , IFNULL(SUM(JW.TIME_SPENT_SECONDS), 0) AS TOTAL_WORK_SECONDS
-        FROM ISSUES ISU
-        LEFT OUTER JOIN WORKLOGS JW 
-            ON ISU.ID = JW.ISSUE_ID
-        GROUP BY ISU.ID
-        UNION
-        SELECT JM.*
-            ,IFNULL(SUM(JW.TIME_SPENT_SECONDS), 0) AS TOTAL_WORK_SECONDS
-        FROM JIRA_MAIN JM
-        LEFT OUTER JOIN WORKLOGS JW 
-            ON JM.ID = JW.ISSUE_ID
-        GROUP BY JM.ID
+  let query = `WITH ISSUES AS (
+    SELECT 
+        jm.*, 
+        IFNULL(uws.TOTAL_WORK_SECONDS, 0) AS work_seconds
+    FROM 
+        JIRA_MAIN jm
+    LEFT OUTER JOIN 
+        user_tot_work uws 
+        ON jm.id = uws.issue_id
+    WHERE 
+        jm.ASSIGNEE_DISPLAY_NAME = '${srch.userName}'
+    GROUP BY
+        jm.id
+    UNION
+    SELECT 
+        jm.*, 
+        IFNULL(uws.total_work_seconds, 0) AS work_seconds
+    FROM 
+        user_tot_work uws 
+    LEFT OUTER JOIN 
+        JIRA_MAIN jm 
+        ON jm.id = uws.issue_id 
+    WHERE 
+        uws.user_name = '${srch.userName}'
+    GROUP BY
+        jm.id
     )
-    SELECT *
-    FROM COMBINED
-    WHERE TRUE`;
+    SELECT * FROM ISSUES 
+    WHERE TRUE
+    `;
 
   if (srch.issueName) {
     query += ` AND PROJECT_NAME LIKE '%' || '${srch.issueName}' || '%'`;
@@ -65,12 +70,18 @@ export const dbUserIssueAndWorkTimeListBySrch = (
     query += ` AND START_DATE = '${srch.startDate}'`;
   }
 
-  query += ` GROUP BY ID
-      ORDER BY CREATED ${srch.sort ?? "DESC"}
-      LIMIT ${page.limit} OFFSET ${page.offset};`;
+  query += ` GROUP BY ID`;
+  return query;
+};
 
-  return new Promise<any[]>((resolve, reject) => {
-    db.all(query, (err, results: any[]) => {
+export const dbSelectUserIssueAndWorkTimeListBySrch = (srch: IssueSrch) => {
+  let query = queryBySelectUserIssueAndWorkTimeListBySrchWithoutPaging(srch);
+
+  query += ` ORDER BY CREATED ${srch.sort ?? "DESC"}
+      LIMIT ${srch.limit} OFFSET ${srch.offset};`;
+
+  return new Promise<UserIssueVO[]>((resolve, reject) => {
+    db.all(query, (err, results: UserIssueVO[]) => {
       if (err) {
         logError(err);
         reject([]);
@@ -78,5 +89,28 @@ export const dbUserIssueAndWorkTimeListBySrch = (
         resolve(results);
       }
     });
+  });
+};
+
+export const dbSelectUserIssueAndWorkTimeCountBySrch = (
+  srch: IssueSrch
+): Promise<Map<string, number>> => {
+  return new Promise<Map<string, number>>((resolve, reject) => {
+    db.get(
+      toCountWrapper(
+        queryBySelectUserIssueAndWorkTimeListBySrchWithoutPaging(srch)
+      ),
+      (err: Error, result: { totalCount: number }) => {
+        if (err) {
+          logError(err);
+          reject(new Map<string, number>([["totalCount", 0]]));
+        } else {
+          const countMap = new Map<string, number>([
+            ["totalCount", result.totalCount],
+          ]);
+          resolve(countMap);
+        }
+      }
+    );
   });
 };

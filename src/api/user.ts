@@ -1,37 +1,45 @@
 import { Request, Response } from "express";
-import { dbUserIssueAndWorkTimeListBySrch, dbUserList } from "../db/user";
 
-import { logError } from "../util/error";
-import { IssueSearch } from "@defines/db/issue";
+import { IssueSrch, UserIssueVO } from "@defines/db/issue";
 
-export const userList = async (req: Request, resp: Response) => {
-  try {
-    return resp.json(await dbUserList());
-  } catch (err) {
-    logError(err);
-  }
-};
+import {
+  dbSelectUserIssueAndWorkTimeCountBySrch,
+  dbSelectUserIssueAndWorkTimeListBySrch,
+} from "@db/user";
 
-export const userIssueAndWorkTimeBySrch = async (
+import { logError } from "@util/error";
+
+export const selectUserIssueAndWorkTimeBySrch = async (
   req: Request,
   resp: Response
 ) => {
   const { startDate, userId, userName, limit, offset } = req.query;
 
-  const srch: IssueSearch = {
+  const srch: IssueSrch = {
     startDate: startDate ? startDate.toString() : "",
     userId: userId ? userId.toString() : "",
+
     /** 필수 */
     userName: userName ? userName.toString() : "",
-  };
-
-  const page = {
-    limit: limit ?? 10,
-    offset: offset ?? 0,
+    limit: Number(limit) ?? 10,
+    offset: Number(offset) ?? 0,
   };
 
   try {
-    return resp.json(await dbUserIssueAndWorkTimeListBySrch(srch, page));
+    const userIssueAndWorkTimeList =
+      await dbSelectUserIssueAndWorkTimeListBySrch(srch);
+    const userIssueAndWorkTimeCount =
+      await dbSelectUserIssueAndWorkTimeCountBySrch(srch);
+
+    const customPage: CustomPage<UserIssueVO> = {
+      list: userIssueAndWorkTimeList,
+      pageInfo: {
+        totalCount: userIssueAndWorkTimeCount.get("totalCount") ?? 0,
+        limit: Number(req.query.limit) ?? 0,
+        offset: Number(req.query.offset) ?? 0,
+      },
+    };
+    return resp.json(customPage);
   } catch (err) {
     logError(err);
   }
