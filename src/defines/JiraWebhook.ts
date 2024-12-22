@@ -31,17 +31,17 @@ export interface JiraUserData {
 
 /** 프로젝트 댓글 입력시 데이터 입니다. */
 export interface JiraCommentData {
-  id: string; // 작업내역 id '10002',
+  id: string; // 작업내역 id
   author: {
     // 댓글을 처음 작성한 사람
-    accountId: string; // 계정id '712020:20955c43-0d40-47d5-b100-faf80c0f0327',
-    displayName: string; // 계정닉네임 '[TFDT] 최영완',
+    accountId: string; // 계정id
+    displayName: string; // 계정닉네임
   };
   body: string; // '댓글글',
   updateAuthor: {
     // 마지막 업데이트 한 유저 (기존에 있는 댓글을 다른사람이 수정한 경우 마지막 수정한 사람의 데이터)
-    accountId: string; // 계정id '712020:20955c43-0d40-47d5-b100-faf80c0f0327',
-    displayName: string; // 계정닉네임 '[TFDT] 최영완',
+    accountId: string; // 계정id
+    displayName: string; // 계정닉네임
   };
   created: string; // 생성시간 '2024-05-02T17:54:06.140+0900',
   updated: string; // 업데이트 시간 '2024-05-02T17:54:06.140+0900',
@@ -65,13 +65,13 @@ export interface IssuelinksData {
 export interface JiraWorkLogData {
   author: {
     // 작성자
-    accountId: string; // 계정id '6423c871b05b4e3e7daba91f',
-    displayName: string; // 계정닉네임 '최영완',
+    accountId: string; // 계정id
+    displayName: string; // 계정닉네임
   };
   updateAuthor: {
     // 업데이트 한 사람 (작성자랑 다를수있음)
-    accountId: string; // '6423c871b05b4e3e7daba91f',
-    displayName: string; // '최영완',
+    accountId: string;
+    displayName: string
   };
   comment: string; // 내용
   created: string; // 생성 시간 '2024-05-13T12:43:22.170+0900',
@@ -100,8 +100,8 @@ export interface JiraIssueData {
     summary: string; // 제목
     creator: {
       // 프로젝트를 생성한 사람
-      accountId: string; // 계정id '712020:20955c43-0d40-47d5-b100-faf80c0f0327',
-      displayName: string; // 계정닉네임 '[TFDT] 최영완',
+      accountId: string; // 계정id 
+      displayName: string; // 계정닉네임
     };
     assignee?: {
       // 담당자 데이터
